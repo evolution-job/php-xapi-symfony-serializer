@@ -146,6 +146,10 @@ final class ObjectNormalizer extends Normalizer
             $statementContext = $this->denormalizeData($data['context'], 'Xabbuh\XApi\Model\Context', $format, $context);
         }
 
-        return new SubStatement($actor, $verb, $object, $result, $statementContext);
+        if (isset($data['timestamp'])) {
+            $created = $this->denormalizeData($data['timestamp'], 'DateTime', $format, $context);
+        }
+
+        return new SubStatement($actor, $verb, $object, $result, $statementContext, $created);
     }
 }
