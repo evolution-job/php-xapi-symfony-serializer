@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Xabbuh\XApi\Model\Account;
 use Xabbuh\XApi\Model\IRL;
 
@@ -53,6 +54,10 @@ final class AccountNormalizer extends Normalizer
         $homePage = '';
 
         if (isset($data['name'])) {
+            if (!is_string($data['name'])) {
+                throw new UnexpectedValueException('Account name is not a string.');
+            }
+
             $name = $data['name'];
         }
 
