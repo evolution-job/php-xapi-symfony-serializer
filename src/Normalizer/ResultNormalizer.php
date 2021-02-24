@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Xabbuh\XApi\Model\Result;
 
 /**
@@ -76,8 +77,25 @@ final class ResultNormalizer extends Normalizer
     public function denormalize($data, $class, $format = null, array $context = array())
     {
         $score = isset($data['score']) ? $this->denormalizeData($data['score'], 'Xabbuh\XApi\Model\Score', $format, $context) : null;
-        $success = isset($data['success']) ? $data['success'] : null;
-        $completion = isset($data['completion']) ? $data['completion'] : null;
+        $success = null;
+        $completion = null;
+
+        if (isset($data['success'])) {
+            if (!is_bool($data['success']) || $data['success'] === (string) $data['success']) {
+                throw new UnexpectedValueException('The success property in result has a wrong data type.');
+            }
+
+            $success = $data['success'];
+        }
+
+        if (isset($data['completion'])) {
+            if (!is_bool($data['completion']) || $data['completion'] === (string) $data['completion']) {
+                throw new UnexpectedValueException('The completion property in result has a wrong data type.');
+            }
+
+            $completion = $data['completion'];
+        }
+
         $response = isset($data['response']) ? $data['response'] : null;
         $duration = isset($data['duration']) ? $data['duration'] : null;
         $extensions = isset($data['extensions']) ? $this->denormalizeData($data['extensions'], 'Xabbuh\XApi\Model\Extensions', $format, $context) : null;
