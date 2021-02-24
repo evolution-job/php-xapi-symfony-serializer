@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Xabbuh\XApi\Common\Exception\XApiException;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\IRI;
 use Xabbuh\XApi\Model\Object as LegacyStatementObject;
@@ -95,6 +96,10 @@ final class ObjectNormalizer extends Normalizer
         }
 
         if (isset($data['objectType']) && 'SubStatement' === $data['objectType']) {
+            if (isset($data['object']) && 'SubStatement' === $data['object']['objectType']) {
+                throw new XApiException('Sub-Statement cannot have a Sub-Statement.');
+            }
+
             return $this->denormalizeSubStatement($data, $format, $context);
         }
 
