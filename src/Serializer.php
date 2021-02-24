@@ -29,6 +29,7 @@ use Xabbuh\XApi\Serializer\Symfony\Normalizer\InteractionComponentNormalizer;
 use Xabbuh\XApi\Serializer\Symfony\Normalizer\LanguageMapNormalizer;
 use Xabbuh\XApi\Serializer\Symfony\Normalizer\ObjectNormalizer;
 use Xabbuh\XApi\Serializer\Symfony\Normalizer\ResultNormalizer;
+use Xabbuh\XApi\Serializer\Symfony\Normalizer\ScoreNormalizer;
 use Xabbuh\XApi\Serializer\Symfony\Normalizer\StatementNormalizer;
 use Xabbuh\XApi\Serializer\Symfony\Normalizer\StatementResultNormalizer;
 use Xabbuh\XApi\Serializer\Symfony\Normalizer\TimestampNormalizer;
@@ -62,6 +63,7 @@ class Serializer
             new LanguageMapNormalizer(),
             new ObjectNormalizer(),
             new ResultNormalizer(),
+            new ScoreNormalizer(),
             new StatementNormalizer(),
             new StatementResultNormalizer(),
             new TimestampNormalizer(),
