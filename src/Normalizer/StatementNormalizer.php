@@ -12,6 +12,7 @@
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Xabbuh\XApi\Common\Exception\UnsupportedStatementVersionException;
 use Xabbuh\XApi\Model\Object as LegacyStatementObject;
 use Xabbuh\XApi\Model\Statement;
@@ -98,7 +99,15 @@ final class StatementNormalizer extends Normalizer
             }
         }
 
-        $id = isset($data['id']) ? StatementId::fromString($data['id']) : null;
+        $id = null;
+
+        if (isset($data['id'])) {
+            if (!is_string($data['id'])) {
+                throw new UnexpectedValueException('Statement ID is not valid.');
+            }
+
+            $id = StatementId::fromString($data['id']);
+        }
 
         if (empty($data['actor'])) {
             throw new InvalidArgumentException('Statement actor is missing.');
