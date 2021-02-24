@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Xabbuh\XApi\Common\Exception\UnsupportedStatementVersionException;
 use Xabbuh\XApi\Model\Object as LegacyStatementObject;
 use Xabbuh\XApi\Model\Statement;
@@ -98,6 +99,19 @@ final class StatementNormalizer extends Normalizer
         }
 
         $id = isset($data['id']) ? StatementId::fromString($data['id']) : null;
+
+        if (empty($data['actor'])) {
+            throw new InvalidArgumentException('Statement actor is missing.');
+        }
+
+        if (empty($data['verb'])) {
+            throw new InvalidArgumentException('Statement verb is missing.');
+        }
+
+        if (empty($data['object'])) {
+            throw new InvalidArgumentException('Statement object is missing.');
+        }
+
         $actor = $this->denormalizeData($data['actor'], 'Xabbuh\XApi\Model\Actor', $format, $context);
         $verb = $this->denormalizeData($data['verb'], 'Xabbuh\XApi\Model\Verb', $format, $context);
 

@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Xabbuh\XApi\Model\Context;
 
 /**
@@ -80,7 +81,11 @@ final class ContextNormalizer extends Normalizer
     {
         $statementContext = new Context();
 
-        if (isset($data['registration'])) {
+        if (array_key_exists('registration', $data)) {
+            if (empty($data['registration'])) {
+                throw new InvalidArgumentException('Missing registration in context.');
+            }
+
             $statementContext = $statementContext->withRegistration($data['registration']);
         }
 

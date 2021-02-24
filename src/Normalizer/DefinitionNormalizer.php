@@ -220,7 +220,11 @@ final class DefinitionNormalizer extends Normalizer
             $definition = $definition->withType(IRI::fromString($data['type']));
         }
 
-        if (isset($data['moreInfo'])) {
+        if (array_key_exists('moreInfo', $data)) {
+            if (null === $data['moreInfo']) {
+                throw new InvalidArgumentException('Missing moreInfo in activity definition.');
+            }
+
             $definition = $definition->withMoreInfo(IRL::fromString($data['moreInfo']));
         }
 

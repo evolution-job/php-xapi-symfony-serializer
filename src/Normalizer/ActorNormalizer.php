@@ -18,6 +18,8 @@ use Xabbuh\XApi\Model\Group;
 use Xabbuh\XApi\Model\InverseFunctionalIdentifier;
 use Xabbuh\XApi\Model\IRI;
 
+use function PHPUnit\Framework\throwException;
+
 /**
  * Normalizes and denormalizes xAPI statement actors.
  *
@@ -76,6 +78,10 @@ final class ActorNormalizer extends Normalizer
     {
         $inverseFunctionalIdentifier = $this->denormalizeInverseFunctionalIdentifier($data, $format, $context);
         $name = isset($data['name']) ? $data['name'] : null;
+
+        if (null === $name) {
+            throw new InvalidArgumentException('Missing name for actor.');
+        }
 
         if (isset($data['objectType']) && 'Group' === $data['objectType']) {
             return $this->denormalizeGroup($inverseFunctionalIdentifier, $name, $data, $format, $context);
