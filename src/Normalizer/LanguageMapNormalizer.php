@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\LanguageMap;
@@ -53,6 +54,12 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
+        foreach ($data as $key => $value) {
+            if (!LanguageMap::isValidTag($key)) {
+                throw new UnexpectedValueException(sprintf('Language code "%s" is not valid.', $key));
+            }
+        }
+
         return LanguageMap::create($data);
     }
 
