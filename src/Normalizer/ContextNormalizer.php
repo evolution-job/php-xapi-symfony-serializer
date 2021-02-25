@@ -12,7 +12,9 @@
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Xabbuh\XApi\Model\Context;
+use Xabbuh\XApi\Model\LanguageMap;
 
 /**
  * Normalizes and denormalizes xAPI statement contexts.
@@ -110,6 +112,10 @@ final class ContextNormalizer extends Normalizer
         }
 
         if (isset($data['language'])) {
+            if (!LanguageMap::isValidTag($data['language'])) {
+                throw new UnexpectedValueException(sprintf('Language code "%s" is not valid.', $data['language']));
+            }
+
             $statementContext = $statementContext->withLanguage($data['language']);
         }
 
