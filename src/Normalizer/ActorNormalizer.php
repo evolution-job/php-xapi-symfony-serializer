@@ -79,8 +79,10 @@ final class ActorNormalizer extends Normalizer
         $inverseFunctionalIdentifier = $this->denormalizeInverseFunctionalIdentifier($data, $format, $context);
         $name = isset($data['name']) ? $data['name'] : null;
 
-        if (null === $name) {
-            throw new InvalidArgumentException('Missing name for actor.');
+        if (array_key_exists('name', $data)) {
+            if (null === $name) {
+                throw new InvalidArgumentException('Missing name for actor.');
+            }
         }
 
         if (isset($data['objectType']) && 'Group' === $data['objectType']) {
