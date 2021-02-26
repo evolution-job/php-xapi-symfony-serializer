@@ -12,6 +12,7 @@
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Agent;
 use Xabbuh\XApi\Model\Group;
@@ -85,8 +86,14 @@ final class ActorNormalizer extends Normalizer
             }
         }
 
-        if (isset($data['objectType']) && 'Group' === $data['objectType']) {
-            return $this->denormalizeGroup($inverseFunctionalIdentifier, $name, $data, $format, $context);
+        if (isset($data['objectType'])) {
+            if (!in_array($data['objectType'], ['Agent', 'Group'])) {
+                throw new UnexpectedValueException('The actor of statement is not an Agent or Group.');
+            }
+
+            if ('Group' === $data['objectType']) {
+                return $this->denormalizeGroup($inverseFunctionalIdentifier, $name, $data, $format, $context);
+            }
         }
 
         if (null === $inverseFunctionalIdentifier) {

@@ -112,7 +112,9 @@ final class ObjectNormalizer extends Normalizer
             return new StatementReference(StatementId::fromString($data['id']));
         }
 
-        return null;
+        throw new UnexpectedValueException(
+            'The object of statement is not an Activity, Agent/Group, SubStatement, or Statement Reference.'
+        );
     }
 
     /**
