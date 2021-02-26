@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Xabbuh\XApi\Model\Context;
 use Xabbuh\XApi\Model\LanguageMap;
+use Xabbuh\XApi\Model\Uuid;
 
 /**
  * Normalizes and denormalizes xAPI statement contexts.
@@ -86,6 +87,10 @@ final class ContextNormalizer extends Normalizer
         if (array_key_exists('registration', $data)) {
             if (empty($data['registration'])) {
                 throw new InvalidArgumentException('Missing registration in context.');
+            }
+
+            if (!is_string($data['registration']) || !Uuid::isValid($data['registration'])) {
+                throw new UnexpectedValueException('UUID for context registration is no valid.');
             }
 
             $statementContext = $statementContext->withRegistration($data['registration']);

@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Xabbuh\XApi\Common\Exception\XApiException;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\IRI;
@@ -104,6 +105,10 @@ final class ObjectNormalizer extends Normalizer
         }
 
         if (isset($data['objectType']) && 'StatementRef' === $data['objectType']) {
+            if (!is_string($data['id'])) {
+                throw new UnexpectedValueException('Statement ID is not valid.');
+            }
+
             return new StatementReference(StatementId::fromString($data['id']));
         }
 
