@@ -84,6 +84,10 @@ final class ActorNormalizer extends Normalizer
             if (null === $name) {
                 throw new InvalidArgumentException('Missing name for actor.');
             }
+
+            if (!is_string($name)) {
+                throw new UnexpectedValueException('Actor name is not a string.');
+            }
         }
 
         if (isset($data['objectType'])) {
