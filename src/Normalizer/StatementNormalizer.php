@@ -26,6 +26,20 @@ use Xabbuh\XApi\Model\StatementObject;
  */
 final class StatementNormalizer extends Normalizer
 {
+    public const VALID_PROPERTIES = [
+        'id',
+        'actor',
+        'verb',
+        'object',
+        'result',
+        'context',
+        'timestamp',
+        'stored',
+        'authority',
+        'version',
+        'attachments',
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -89,6 +103,13 @@ final class StatementNormalizer extends Normalizer
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
+        $dataProperties = array_keys($data);
+        $diff = array_diff($dataProperties, self::VALID_PROPERTIES);
+
+        if (count($diff) > 0) {
+            throw new UnexpectedValueException('Some statements properties are not valid.');
+        }
+
         $version = null;
 
         if (isset($data['version'])) {
