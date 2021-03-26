@@ -13,6 +13,7 @@ namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Xabbuh\XApi\Common\Exception\XApiException;
 use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Agent;
 use Xabbuh\XApi\Model\Group;
@@ -140,6 +141,15 @@ final class ActorNormalizer extends Normalizer
 
     private function denormalizeInverseFunctionalIdentifier($data, $format = null, array $context = array())
     {
+        $mbox = isset($data['mbox']) ? 1 : 0;
+        $mbox_sha1sum = isset($data['mbox_sha1sum']) ? 1 : 0;
+        $openid = isset($data['openid']) ? 1 : 0;
+        $account = isset($data['account']) ? 1 : 0;
+
+        if ($mbox + $mbox_sha1sum + $openid + $account > 1) {
+            throw new XApiException('An Agent must not include more than one Inverse Functional Identifier');
+        }
+
         if (isset($data['mbox'])) {
             return InverseFunctionalIdentifier::withMbox(IRI::fromString($data['mbox']));
         }
