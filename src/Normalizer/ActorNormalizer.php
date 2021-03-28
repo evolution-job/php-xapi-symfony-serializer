@@ -178,6 +178,10 @@ final class ActorNormalizer extends Normalizer
 
     private function denormalizeGroup(InverseFunctionalIdentifier $iri = null, $name, $data, $format = null, array $context = array())
     {
+        if (null === $iri && !isset($data['member']) || !is_array($data['member'])) {
+            throw new XApiException('The group does not use the "member" property or it is not valid value.');
+        }
+
         $members = array();
 
         if (isset($data['member'])) {
