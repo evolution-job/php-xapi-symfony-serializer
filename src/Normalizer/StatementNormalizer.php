@@ -14,6 +14,7 @@ namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Xabbuh\XApi\Common\Exception\UnsupportedStatementVersionException;
+use Xabbuh\XApi\Common\Exception\XApiException;
 use Xabbuh\XApi\Model\Object as LegacyStatementObject;
 use Xabbuh\XApi\Model\Statement;
 use Xabbuh\XApi\Model\StatementId;
@@ -179,6 +180,10 @@ final class StatementNormalizer extends Normalizer
         }
 
         if (isset($data['attachments'])) {
+            if (empty($data['attachments'][0]) || !is_array($data['attachments'][0])) {
+                throw new XApiException('Statement attachments are not valid.');
+            }
+
             $attachments = $this->denormalizeData($data['attachments'], 'Xabbuh\XApi\Model\Attachment[]', $format, $context);
         }
 

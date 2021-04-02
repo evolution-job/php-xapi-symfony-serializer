@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Xabbuh\XApi\Common\Exception\XApiException;
 use Xabbuh\XApi\Model\Attachment;
 use Xabbuh\XApi\Model\IRI;
 use Xabbuh\XApi\Model\IRL;
@@ -58,8 +59,26 @@ final class AttachmentNormalizer extends Normalizer
         return $data instanceof Attachment;
     }
 
-    public function denormalize($data, $class, $format = null, array $context = array())
+    /**
+     * @param mixed  $data
+     * @param string $class
+     * @param null   $format
+     * @param array  $context
+     *
+     * @throws XApiException
+     *
+     * @return Attachment
+     */
+    public function denormalize($data, $class, $format = null, array $context = array()): Attachment
     {
+        if (!is_int($data['length'])) {
+            throw new XApiException('Attachment length property is not valid.');
+        }
+
+        if (!is_string($data['sha2'])) {
+            throw new XApiException('Attachment sha2 property is not valid.');
+        }
+
         $display = $this->denormalizeData($data['display'], 'Xabbuh\XApi\Model\LanguageMap', $format, $context);
         $description = null;
         $fileUrl = null;
