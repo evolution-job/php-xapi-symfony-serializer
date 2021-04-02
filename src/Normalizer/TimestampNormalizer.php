@@ -27,7 +27,19 @@ final class TimestampNormalizer implements DenormalizerInterface, NormalizerInte
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
-        return new \DateTime($data);
+        $date = \DateTime::createFromFormat(\DateTime::ATOM, $data);
+
+        if (false !== $date) {
+            return $date;
+        }
+
+        $date = \DateTime::createFromFormat(\DateTime::RFC3339_EXTENDED, $data);
+
+        if (false !== $date) {
+            return $date;
+        }
+
+        throw new \UnexpectedValueException('Timestamp "'.$data.'" is not valid.');
     }
 
     /**
