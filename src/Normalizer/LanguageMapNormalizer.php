@@ -54,6 +54,10 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
+        if (!is_array($data)) {
+            throw new \UnexpectedValueException('Language map is not valid.');
+        }
+
         foreach ($data as $key => $value) {
             if (!LanguageMap::isValidTag($key)) {
                 throw new UnexpectedValueException(sprintf('Language code "%s" is not valid.', $key));
