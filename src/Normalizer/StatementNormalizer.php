@@ -19,6 +19,7 @@ use Xabbuh\XApi\Model\Object as LegacyStatementObject;
 use Xabbuh\XApi\Model\Statement;
 use Xabbuh\XApi\Model\StatementId;
 use Xabbuh\XApi\Model\StatementObject;
+use Xabbuh\XApi\Model\StatementReference;
 
 /**
  * Normalizes and denormalizes xAPI statements.
@@ -150,6 +151,10 @@ final class StatementNormalizer extends Normalizer
             $object = $this->denormalizeData($data['object'], StatementObject::class, $format, $context);
         } else {
             $object = $this->denormalizeData($data['object'], LegacyStatementObject::class, $format, $context);
+        }
+
+        if ($verb->isVoidVerb() && !$object instanceof StatementReference) {
+            throw new \UnexpectedValueException('Statement verb voided does not use object "StatementRef"');
         }
 
         $result = null;
