@@ -20,8 +20,6 @@ use Xabbuh\XApi\Model\Group;
 use Xabbuh\XApi\Model\InverseFunctionalIdentifier;
 use Xabbuh\XApi\Model\IRI;
 
-use function PHPUnit\Framework\throwException;
-
 /**
  * Normalizes and denormalizes xAPI statement actors.
  *
@@ -151,6 +149,10 @@ final class ActorNormalizer extends Normalizer
         }
 
         if (isset($data['mbox'])) {
+            if (!$this->isMBoxValid($data['mbox'])) {
+                throw new \UnexpectedValueException('Actor mbox has not the form "mailto:email"');
+            }
+
             return InverseFunctionalIdentifier::withMbox(IRI::fromString($data['mbox']));
         }
 
@@ -193,5 +195,27 @@ final class ActorNormalizer extends Normalizer
         }
 
         return new Group($iri, $name, $members);
+    }
+
+    private function isMBoxValid(string $mbox): bool
+    {
+        $parts = explode(':', $mbox);
+        $parts = array_filter($parts);
+
+        if (2 !== count($parts)) {
+            return false;
+        }
+
+        list($mailto, $mail) = $parts;
+
+        if ('mailto' !== $mailto) {
+            return false;
+        }
+
+        if (false === filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        return true;
     }
 }
