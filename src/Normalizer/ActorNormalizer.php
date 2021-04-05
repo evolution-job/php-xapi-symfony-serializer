@@ -157,6 +157,10 @@ final class ActorNormalizer extends Normalizer
         }
 
         if (isset($data['mbox_sha1sum'])) {
+            if (!$this->isMBoxSha1SumValid($data['mbox_sha1sum'])) {
+                throw new \UnexpectedValueException('Actor mbox_sha1sum is not a string');
+            }
+
             return InverseFunctionalIdentifier::withMboxSha1Sum($data['mbox_sha1sum']);
         }
 
@@ -197,7 +201,7 @@ final class ActorNormalizer extends Normalizer
         return new Group($iri, $name, $members);
     }
 
-    private function isMBoxValid(string $mbox): bool
+    private function isMBoxValid($mbox): bool
     {
         $parts = explode(':', $mbox);
         $parts = array_filter($parts);
@@ -213,6 +217,15 @@ final class ActorNormalizer extends Normalizer
         }
 
         if (false === filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function isMBoxSha1SumValid($mBoxSha1sum): bool
+    {
+        if (!is_string($mBoxSha1sum)) {
             return false;
         }
 
