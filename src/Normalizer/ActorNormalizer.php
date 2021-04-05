@@ -179,12 +179,8 @@ final class ActorNormalizer extends Normalizer
 
     private function denormalizeAccount($data, $format = null, array $context = array())
     {
-        if (empty($data['account']) || empty($data['account']['homePage'])) {
+        if (!$this->isAccountHomePageValid($data)) {
             throw new \UnexpectedValueException('Actor account is not valid.');
-        }
-
-        if (!$this->isAccountHomePageValid($data['account']['homePage'])) {
-            throw new \UnexpectedValueException('Account homepage is not an IRL.');
         }
 
         return $this->denormalizeData($data['account'], 'Xabbuh\XApi\Model\Account', $format, $context);
@@ -249,8 +245,16 @@ final class ActorNormalizer extends Normalizer
         return true;
     }
 
-    private function isAccountHomePageValid($homePage): bool
+    private function isAccountHomePageValid($data): bool
     {
-        return $this->isOpenIdValid($homePage);
+        if (empty($data['account']) || empty($data['account']['name']) || empty($data['account']['homePage'])) {
+            return false;
+        }
+
+        if (!$this->isOpenIdValid($data['account']['homePage'])) {
+            return false;
+        }
+
+        return true;
     }
 }
