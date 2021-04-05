@@ -165,6 +165,10 @@ final class ActorNormalizer extends Normalizer
         }
 
         if (isset($data['openid'])) {
+            if (!$this->isOpenIdValid($data['openid'])) {
+                throw new \UnexpectedValueException('Actor openid is not a URI.');
+            }
+
             return InverseFunctionalIdentifier::withOpenId($data['openid']);
         }
 
@@ -226,6 +230,15 @@ final class ActorNormalizer extends Normalizer
     private function isMBoxSha1SumValid($mBoxSha1sum): bool
     {
         if (!is_string($mBoxSha1sum)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function isOpenIdValid($openId): bool
+    {
+        if (false === filter_var($openId, FILTER_VALIDATE_URL)) {
             return false;
         }
 
