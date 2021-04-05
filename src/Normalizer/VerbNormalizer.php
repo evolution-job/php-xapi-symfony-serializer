@@ -45,6 +45,10 @@ final class VerbNormalizer extends Normalizer
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
+        if (empty($data['id'])) {
+            throw new \UnexpectedValueException('Verb "id" property is missing.');
+        }
+
         $id = IRI::fromString($data['id']);
         $display = null;
 
