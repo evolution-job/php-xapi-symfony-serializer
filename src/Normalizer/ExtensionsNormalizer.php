@@ -60,6 +60,10 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException('The "extension" property is not and object.');
+        }
+
         $extensions = new \SplObjectStorage();
 
         foreach ($data as $iri => $value) {
