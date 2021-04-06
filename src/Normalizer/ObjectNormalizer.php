@@ -142,9 +142,7 @@ final class ObjectNormalizer extends Normalizer
 
     private function denormalizeSubStatement(array $data, $format = null, array $context = array())
     {
-        if (empty($data['object'])) {
-            throw new  \UnexpectedValueException('Substatement requires an object.');
-        }
+        $this->validateSubStatementProperties($data);
 
         $actor = $this->denormalizeData($data['actor'], 'Xabbuh\XApi\Model\Actor', $format, $context);
         $verb = $this->denormalizeData($data['verb'], 'Xabbuh\XApi\Model\Verb', $format, $context);
@@ -173,5 +171,28 @@ final class ObjectNormalizer extends Normalizer
         }
 
         return new SubStatement($actor, $verb, $object, $result, $statementContext, $created);
+    }
+
+    private function validateSubStatementProperties($data)
+    {
+        if (empty($data['object'])) {
+            throw new  \UnexpectedValueException('Sub-Statement requires an object.');
+        }
+
+        if (isset($data['id'])) {
+            throw new \UnexpectedValueException('A Sub-Statement cannot use the "id" property at the Statement level');
+        }
+
+        if (isset($data['stored'])) {
+            throw new \UnexpectedValueException('A Sub-Statement cannot use the "stored" property');
+        }
+
+        if (isset($data['version'])) {
+            throw new \UnexpectedValueException('A Sub-Statement cannot use the "version" property');
+        }
+
+        if (isset($data['authority'])) {
+            throw new \UnexpectedValueException('A Sub-Statement cannot use the "authority" property');
+        }
     }
 }
