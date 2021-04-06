@@ -3,6 +3,7 @@
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use UnexpectedValueException;
 use Xabbuh\XApi\Model\Definition;
 use Xabbuh\XApi\Model\Interaction\ChoiceInteractionDefinition;
 use Xabbuh\XApi\Model\Interaction\FillInInteractionDefinition;
@@ -145,6 +146,14 @@ final class DefinitionNormalizer extends Normalizer
             );
         }
 
+        if (!$this->isInteractionTypeValid($data)) {
+            throw new UnexpectedValueException(
+                'An Activity Definition uses the "interactionType" property but the '
+                    . '"correctResponsesPattern", "choices", "scale", "source", "target", or "steps" '
+                    . 'properties are not used.'
+            );
+        }
+
         if (isset($data['interactionType'])) {
             switch ($data['interactionType']) {
                 case 'choice':
@@ -262,5 +271,18 @@ final class DefinitionNormalizer extends Normalizer
         );
 
         return in_array($type, $supportedDefinitionClasses, true);
+    }
+
+    private function isInteractionTypeValid(array $data): bool
+    {
+        $propertyNames = array_keys($data);
+        $interactionOptions = ['correctResponsesPattern', 'choices', 'scale', 'source', 'target', 'steps'];
+        $diff = array_diff($interactionOptions, $propertyNames);
+
+        if (!in_array('interactionType', $propertyNames) && count($diff) !== count($interactionOptions)) {
+            return false;
+        }
+
+        return true;
     }
 }
