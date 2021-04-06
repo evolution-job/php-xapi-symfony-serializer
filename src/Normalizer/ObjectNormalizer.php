@@ -127,6 +127,10 @@ final class ObjectNormalizer extends Normalizer
 
     private function denormalizeActivity(array $data, $format = null, array $context = array())
     {
+        if (empty($data['id'])) {
+            throw new \UnexpectedValueException('Activity as object has not "id" property.');
+        }
+
         $definition = null;
 
         if (isset($data['definition'])) {
