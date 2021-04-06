@@ -139,6 +139,12 @@ final class DefinitionNormalizer extends Normalizer
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException(
+                sprintf('Definition "%s" is not valid.', (string)$data)
+            );
+        }
+
         if (isset($data['interactionType'])) {
             switch ($data['interactionType']) {
                 case 'choice':
