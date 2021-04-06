@@ -140,8 +140,12 @@ final class ObjectNormalizer extends Normalizer
         return new Activity(IRI::fromString($data['id']), $definition);
     }
 
-    private function denormalizeSubStatement(array  $data, $format = null, array $context = array())
+    private function denormalizeSubStatement(array $data, $format = null, array $context = array())
     {
+        if (empty($data['object'])) {
+            throw new  \UnexpectedValueException('Substatement requires an object.');
+        }
+
         $actor = $this->denormalizeData($data['actor'], 'Xabbuh\XApi\Model\Actor', $format, $context);
         $verb = $this->denormalizeData($data['verb'], 'Xabbuh\XApi\Model\Verb', $format, $context);
 
