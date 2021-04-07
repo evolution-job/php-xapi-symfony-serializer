@@ -97,7 +97,29 @@ final class ResultNormalizer extends Normalizer
         }
 
         $response = isset($data['response']) ? $data['response'] : null;
+
+        if (null !== $response && !is_string($response)) {
+            throw new \InvalidArgumentException('A "response" property is not a string.');
+        }
+
         $duration = isset($data['duration']) ? $data['duration'] : null;
+
+        if (null !== $duration) {
+            $duration = preg_replace_callback(
+                '/\d+[.,]\d+/',
+                function ($matches) {
+                    return floor($matches[0]);
+                },
+                $duration
+            );
+
+            try {
+                new \DateInterval($duration);
+            } catch (\Exception $e) {
+                throw new \InvalidArgumentException('A "duration" property is not formatted to ISO 8601.');
+            }
+        }
+
         $extensions = isset($data['extensions']) ? $this->denormalizeData($data['extensions'], 'Xabbuh\XApi\Model\Extensions', $format, $context) : null;
 
         return new Result($score, $success, $completion, $response, $duration, $extensions);

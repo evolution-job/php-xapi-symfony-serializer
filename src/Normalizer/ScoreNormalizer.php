@@ -16,11 +16,19 @@ final class ScoreNormalizer extends Normalizer
 
     public function denormalize($data, $type, $format = null, array $context = [])
     {
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException('A "score" property is not and object.');
+        }
+
         $score = new Score();
 
         if (isset($data['scaled'])) {
             if (!is_numeric($data['scaled']) || $data['scaled'] === (string) $data['scaled']) {
                 throw new UnexpectedValueException('Score scaled is not a number.');
+            }
+
+            if ($data['scaled'] < -1 || $data['scaled'] > 1) {
+                throw new \UnexpectedValueException('A score "scaled" property has a value outside of -1 and 1.');
             }
 
             $score = $score->withScaled($data['scaled']);
@@ -39,6 +47,10 @@ final class ScoreNormalizer extends Normalizer
                 throw new UnexpectedValueException('Score min is not a number.');
             }
 
+            if (null !== $score->getRaw() && $score->getRaw() < $data['min']) {
+                throw new \UnexpectedValueException('A score "raw" property should be greater than or equal "min".');
+            }
+
             $score = $score->withMin($data['min']);
         }
 
@@ -47,7 +59,15 @@ final class ScoreNormalizer extends Normalizer
                 throw new UnexpectedValueException('Score max is not a number.');
             }
 
+            if (null !== $score->getRaw() && $score->getRaw() > $data['max']) {
+                throw new \UnexpectedValueException('A score "raw" property should be less than or equal "min".');
+            }
+
             $score = $score->withMax($data['max']);
+        }
+
+        if (null !== $score->getMin() && null !== $score->getMax() && $score->getMin() >= $score->getMax()) {
+            throw new \UnexpectedValueException('A score "min" property should be less than "max"');
         }
 
         return $score;
