@@ -67,6 +67,10 @@ final class ContextActivitiesNormalizer extends Normalizer
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException('A "contextActivities" property is not an object.');
+        }
+
         $parentActivities = null;
         $groupingActivities = null;
         $categoryActivities = null;
@@ -86,6 +90,15 @@ final class ContextActivitiesNormalizer extends Normalizer
 
         if (isset($data['other']) && null !== $data['other']) {
             $otherActivities = $this->denormalizeData($data['other'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
+        }
+
+        $withParentActivities = null !== $parentActivities ? 1 : 0;
+        $withGroupingActivities = null !== $groupingActivities ? 1 : 0;
+        $withCategoryActivities = null !== $categoryActivities ? 1 : 0;
+        $withOtherActivities = null !== $otherActivities ? 1 : 0;
+
+        if ($withParentActivities + $withGroupingActivities + $withCategoryActivities + $withOtherActivities < 1) {
+            throw new \InvalidArgumentException('The "contextActivities" has not valid activities.');
         }
 
         return new ContextActivities($parentActivities, $groupingActivities, $categoryActivities, $otherActivities);

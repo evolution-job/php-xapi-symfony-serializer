@@ -161,6 +161,16 @@ final class ObjectNormalizer extends Normalizer
         }
 
         if (isset($data['context'])) {
+            if (!$object instanceof Activity) {
+                if (isset($data['context']['revision'])) {
+                    throw new \UnexpectedValueException('The "revision" property is not valid with the object type.');
+                }
+
+                if (isset($data['context']['platform'])) {
+                    throw new \UnexpectedValueException('The "platform" property is not valid with the object type.');
+                }
+            }
+
             $statementContext = $this->denormalizeData($data['context'], 'Xabbuh\XApi\Model\Context', $format, $context);
         }
 

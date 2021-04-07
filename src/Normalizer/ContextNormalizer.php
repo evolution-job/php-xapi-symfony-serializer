@@ -101,6 +101,10 @@ final class ContextNormalizer extends Normalizer
         }
 
         if (isset($data['team'])) {
+            if ('Group' !== $data['team']['objectType']) {
+                throw new \UnexpectedValueException('The "team" property is not a Group.');
+            }
+
             $statementContext = $statementContext->withTeam($this->denormalizeData($data['team'], 'Xabbuh\XApi\Model\Group', $format, $context));
         }
 
@@ -109,10 +113,18 @@ final class ContextNormalizer extends Normalizer
         }
 
         if (isset($data['revision'])) {
+            if (!is_string($data['revision'])) {
+                throw new \InvalidArgumentException('The "revision" property is not a string.');
+            }
+
             $statementContext = $statementContext->withRevision($data['revision']);
         }
 
         if (isset($data['platform'])) {
+            if (!is_string($data['platform'])) {
+                throw new \InvalidArgumentException('The "platform" property is not a string.');
+            }
+
             $statementContext = $statementContext->withPlatform($data['platform']);
         }
 
