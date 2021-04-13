@@ -101,7 +101,7 @@ final class ContextNormalizer extends Normalizer
         }
 
         if (isset($data['team'])) {
-            if ('Group' !== $data['team']['objectType']) {
+            if (isset($data['team']['objectType']) && 'Group' !== $data['team']['objectType']) {
                 throw new \UnexpectedValueException('The "team" property is not a Group.');
             }
 
