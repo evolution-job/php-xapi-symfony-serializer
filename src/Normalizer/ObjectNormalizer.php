@@ -13,7 +13,6 @@ namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\IRI;
-use Xabbuh\XApi\Model\Object as LegacyStatementObject;
 use Xabbuh\XApi\Model\StatementId;
 use Xabbuh\XApi\Model\StatementObject;
 use Xabbuh\XApi\Model\StatementReference;
@@ -78,7 +77,7 @@ final class ObjectNormalizer extends Normalizer
      */
     public function supportsNormalization($data, $format = null)
     {
-        return $data instanceof LegacyStatementObject || $data instanceof StatementObject;
+        return $data instanceof StatementObject;
     }
 
     /**
@@ -110,7 +109,7 @@ final class ObjectNormalizer extends Normalizer
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return in_array($type, array(Activity::class, LegacyStatementObject::class, StatementObject::class, StatementReference::class, SubStatement::class), true);
+        return in_array($type, array(Activity::class, StatementObject::class, StatementReference::class, SubStatement::class), true);
     }
 
     private function denormalizeActivity(array $data, $format = null, array $context = array())
@@ -128,12 +127,7 @@ final class ObjectNormalizer extends Normalizer
     {
         $actor = $this->denormalizeData($data['actor'], 'Xabbuh\XApi\Model\Actor', $format, $context);
         $verb = $this->denormalizeData($data['verb'], 'Xabbuh\XApi\Model\Verb', $format, $context);
-
-        if (class_exists(StatementObject::class)) {
-            $object = $this->denormalizeData($data['object'], StatementObject::class, $format, $context);
-        } else {
-            $object = $this->denormalizeData($data['object'], LegacyStatementObject::class, $format, $context);
-        }
+        $object = $this->denormalizeData($data['object'], StatementObject::class, $format, $context);
 
         $result = null;
         $statementContext = null;
