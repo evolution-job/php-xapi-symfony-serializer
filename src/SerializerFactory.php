@@ -31,17 +31,9 @@ final class SerializerFactory implements SerializerFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createStatementSerializer()
+    public function createActivitySerializer()
     {
-        return new StatementSerializer($this->serializer);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createStatementResultSerializer()
-    {
-        return new StatementResultSerializer($this->serializer);
+        return new ActivitySerializer($this->serializer);
     }
 
     /**
@@ -58,5 +50,21 @@ final class SerializerFactory implements SerializerFactoryInterface
     public function createDocumentDataSerializer()
     {
         return new DocumentDataSerializer($this->serializer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createStatementSerializer()
+    {
+        return new StatementSerializer($this->serializer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createStatementResultSerializer()
+    {
+        return new StatementResultSerializer($this->serializer);
     }
 }
