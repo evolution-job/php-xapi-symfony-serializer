@@ -26,7 +26,7 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = [])
     {
         if (!$object instanceof Extensions) {
             return;
@@ -38,7 +38,7 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
             return new \stdClass();
         }
 
-        $data = array();
+        $data = [];
 
         foreach ($extensions as $iri) {
             $data[$iri->getValue()] = $extensions[$iri];
@@ -52,13 +52,13 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
      */
     public function supportsNormalization($data, $format = null)
     {
-       return $data instanceof Extensions;
+        return $data instanceof Extensions;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $class, $format = null, array $context = [])
     {
         $extensions = new \SplObjectStorage();
 

@@ -15,7 +15,7 @@
         "php": "^7.1",
         "php-xapi/exception": "^0.2.0",
         "php-xapi/model": "^1.2 || ^2.1 || ^3.0",
-        "php-xapi/serializer": "^2.1.1",
+        "php-xapi/serializer": "^3.0",
         "symfony/serializer": "^4.4 || ^5.2"
     },
     "require-dev": {
@@ -41,7 +41,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.2.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     }
 }
