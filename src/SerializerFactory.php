@@ -67,4 +67,28 @@ final class SerializerFactory implements SerializerFactoryInterface
     {
         return new StatementResultSerializer($this->serializer);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createPersonSerializer()
+    {
+        return new PersonSerializer($this->serializer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createStateSerializer()
+    {
+        return new StateSerializer($this->serializer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createStateDocumentSerializer()
+    {
+        return new StateDocumentSerializer($this->serializer);
+    }
 }
