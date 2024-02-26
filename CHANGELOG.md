@@ -5,6 +5,8 @@ CHANGELOG
 -----
 
 * Add `ActivitySerializer` that implements `ActivitySerializerInterface`.
+* Add `StateSerializer` that implements `StateSerializerInterface`.
+* Add `StateDocumentSerializer` that implements `StateDocumentSerializerInterface`.
 * Drop support for `2.x` releases of the `php-xapi/serializer` package.
 * Throws exceptions defined in `3.0` release of the `php-xapi/serializer` package.
 
