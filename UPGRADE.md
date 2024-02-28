@@ -1,6 +1,11 @@
 UPGRADE
 =======
 
+Upgrading from 3.x to 4.0
+-------------------------
+
+Dropped support for the `3.x` releases of the `php-xapi/serializer` package.
+
 Upgrading from 2.x to 3.0
 -------------------------
 

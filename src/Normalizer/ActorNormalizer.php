@@ -11,7 +11,10 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use stdClass;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use Xabbuh\XApi\Model\Account;
 use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Agent;
 use Xabbuh\XApi\Model\Group;
@@ -28,28 +31,28 @@ final class ActorNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof Actor) {
             return null;
         }
 
-        $data = array();
+        $data = [];
 
-        $this->normalizeInverseFunctionalIdentifier($object->getInverseFunctionalIdentifier(), $data, $format, $context);
+        $this->normalizeInverseFunctionalIdentifier($data, $object->getInverseFunctionalIdentifier(), $format, $context);
 
         if (null !== $name = $object->getName()) {
             $data['name'] = $name;
         }
 
         if ($object instanceof Group) {
-            $members = array();
+            $members = [];
 
-            foreach ($object->getMembers() as $member) {
-                $members[] = $this->normalize($member);
+            foreach ($object->getMembers() as $agent) {
+                $members[] = $this->normalize($agent);
             }
 
-            if (count($members) > 0) {
+            if ($members !== []) {
                 $data['member'] = $members;
             }
 
@@ -64,7 +67,7 @@ final class ActorNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Actor;
     }
@@ -72,13 +75,13 @@ final class ActorNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         $inverseFunctionalIdentifier = $this->denormalizeInverseFunctionalIdentifier($data, $format, $context);
-        $name = isset($data['name']) ? $data['name'] : null;
+        $name = $data['name'] ?? null;
 
         if (isset($data['objectType']) && 'Group' === $data['objectType']) {
-            return $this->denormalizeGroup($inverseFunctionalIdentifier, $name, $data, $format, $context);
+            return $this->denormalizeGroup($name, $data, $inverseFunctionalIdentifier, $format, $context);
         }
 
         if (null === $inverseFunctionalIdentifier) {
@@ -91,35 +94,35 @@ final class ActorNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Actor' === $type || 'Xabbuh\XApi\Model\Agent' === $type || 'Xabbuh\XApi\Model\Group' === $type;
+        return Actor::class === $type || Agent::class === $type || Group::class === $type;
     }
 
-    private function normalizeInverseFunctionalIdentifier(InverseFunctionalIdentifier $iri = null, &$data, $format = null, array $context = array())
+    private function normalizeInverseFunctionalIdentifier(array &$data, InverseFunctionalIdentifier $inverseFunctionalIdentifier = null, ?string $format = null, array $context = []): void
     {
-        if (null === $iri) {
+        if (!$inverseFunctionalIdentifier instanceof InverseFunctionalIdentifier) {
             return;
         }
 
-        if (null !== $mbox = $iri->getMbox()) {
+        if (($mbox = $inverseFunctionalIdentifier->getMbox()) instanceof IRI) {
             $data['mbox'] = $mbox->getValue();
         }
 
-        if (null !== $mboxSha1Sum = $iri->getMboxSha1Sum()) {
+        if (null !== $mboxSha1Sum = $inverseFunctionalIdentifier->getMboxSha1Sum()) {
             $data['mbox_sha1sum'] = $mboxSha1Sum;
         }
 
-        if (null !== $openId = $iri->getOpenId()) {
+        if (null !== $openId = $inverseFunctionalIdentifier->getOpenId()) {
             $data['openid'] = $openId;
         }
 
-        if (null !== $account = $iri->getAccount()) {
+        if (($account = $inverseFunctionalIdentifier->getAccount()) instanceof Account) {
             $data['account'] = $this->normalizeAttribute($account, $format, $context);
         }
     }
 
-    private function denormalizeInverseFunctionalIdentifier($data, $format = null, array $context = array())
+    private function denormalizeInverseFunctionalIdentifier(array $data, ?string $format = null, array $context = []): ?InverseFunctionalIdentifier
     {
         if (isset($data['mbox'])) {
             return InverseFunctionalIdentifier::withMbox(IRI::fromString($data['mbox']));
@@ -136,27 +139,32 @@ final class ActorNormalizer extends Normalizer
         if (isset($data['account'])) {
             return InverseFunctionalIdentifier::withAccount($this->denormalizeAccount($data, $format, $context));
         }
+
+        return null;
     }
 
-    private function denormalizeAccount($data, $format = null, array $context = array())
+    private function denormalizeAccount(array $data, ?string $format = null, array $context = [])
     {
         if (!isset($data['account'])) {
             return null;
         }
 
-        return $this->denormalizeData($data['account'], 'Xabbuh\XApi\Model\Account', $format, $context);
+        return $this->denormalizeData($data['account'], Account::class, $format, $context);
     }
 
-    private function denormalizeGroup(InverseFunctionalIdentifier $iri = null, $name, $data, $format = null, array $context = array())
+    /**
+     * @throws ExceptionInterface
+     */
+    private function denormalizeGroup($name, array $data, InverseFunctionalIdentifier $inverseFunctionalIdentifier = null, $format = null, array $context = []): Group
     {
-        $members = array();
+        $members = [];
 
         if (isset($data['member'])) {
             foreach ($data['member'] as $member) {
-                $members[] = $this->denormalize($member, 'Xabbuh\XApi\Model\Agent', $format, $context);
+                $members[] = $this->denormalize($member, Agent::class, $format, $context);
             }
         }
 
-        return new Group($iri, $name, $members);
+        return new Group($inverseFunctionalIdentifier, $name, $members);
     }
 }

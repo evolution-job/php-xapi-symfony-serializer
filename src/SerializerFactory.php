@@ -12,7 +12,14 @@
 namespace Xabbuh\XApi\Serializer\Symfony;
 
 use Symfony\Component\Serializer\SerializerInterface;
+use Xabbuh\XApi\Serializer\ActivitySerializerInterface;
+use Xabbuh\XApi\Serializer\ActorSerializerInterface;
+use Xabbuh\XApi\Serializer\DocumentDataSerializerInterface;
+use Xabbuh\XApi\Serializer\PersonSerializerInterface;
 use Xabbuh\XApi\Serializer\SerializerFactoryInterface;
+use Xabbuh\XApi\Serializer\StateDocumentSerializerInterface;
+use Xabbuh\XApi\Serializer\StatementResultSerializerInterface;
+use Xabbuh\XApi\Serializer\StatementSerializerInterface;
 
 /**
  * Creates serializer instances that use the Symfony Serializer component.
@@ -21,17 +28,17 @@ use Xabbuh\XApi\Serializer\SerializerFactoryInterface;
  */
 final class SerializerFactory implements SerializerFactoryInterface
 {
-    private $serializer;
+    private readonly SerializerInterface|\Symfony\Component\Serializer\Serializer $serializer;
 
     public function __construct(SerializerInterface $serializer = null)
     {
-        $this->serializer = $serializer ?: Serializer::createSerializer();
+        $this->serializer = $serializer instanceof SerializerInterface ? $serializer : Serializer::createSerializer();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createActivitySerializer()
+    public function createActivitySerializer(): ActivitySerializerInterface
     {
         return new ActivitySerializer($this->serializer);
     }
@@ -39,7 +46,7 @@ final class SerializerFactory implements SerializerFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createActorSerializer()
+    public function createActorSerializer(): ActorSerializerInterface
     {
         return new ActorSerializer($this->serializer);
     }
@@ -47,7 +54,7 @@ final class SerializerFactory implements SerializerFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createDocumentDataSerializer()
+    public function createDocumentDataSerializer(): DocumentDataSerializerInterface
     {
         return new DocumentDataSerializer($this->serializer);
     }
@@ -55,7 +62,7 @@ final class SerializerFactory implements SerializerFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createStatementSerializer()
+    public function createStatementSerializer(): StatementSerializerInterface
     {
         return new StatementSerializer($this->serializer);
     }
@@ -63,7 +70,7 @@ final class SerializerFactory implements SerializerFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createStatementResultSerializer()
+    public function createStatementResultSerializer(): StatementResultSerializerInterface
     {
         return new StatementResultSerializer($this->serializer);
     }
@@ -71,15 +78,12 @@ final class SerializerFactory implements SerializerFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createPersonSerializer()
+    public function createPersonSerializer(): PersonSerializerInterface
     {
         return new PersonSerializer($this->serializer);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function createStateSerializer()
+    public function createStateSerializer(): StateSerializer
     {
         return new StateSerializer($this->serializer);
     }
@@ -87,7 +91,7 @@ final class SerializerFactory implements SerializerFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createStateDocumentSerializer()
+    public function createStateDocumentSerializer(): StateDocumentSerializerInterface
     {
         return new StateDocumentSerializer($this->serializer);
     }

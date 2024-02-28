@@ -22,47 +22,38 @@ use Xabbuh\XApi\Serializer\StatementResultSerializerInterface;
  * Serializes and deserializes {@link StatementResult statement results} using the Symfony Serializer component.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
+ * @see \Xabbuh\XApi\Serializer\Symfony\Tests\StatementResultSerializerTest
  */
 final class StatementResultSerializer implements StatementResultSerializerInterface
 {
-    /**
-     * @var SerializerInterface The underlying serializer
-     */
-    private $serializer;
-
-    public function __construct(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
+    public function __construct(private readonly SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
      */
-    public function serializeStatementResult(StatementResult $statementResult)
+    public function serializeStatementResult(StatementResult $statementResult): string
     {
         try {
             return $this->serializer->serialize($statementResult, 'json');
-        } catch (ExceptionInterface $e) {
-            throw new StatementResultSerializationException($e->getMessage(), 0, $e);
+        } catch (ExceptionInterface $exception) {
+            throw new StatementResultSerializationException($exception->getMessage(), 0, $exception);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function deserializeStatementResult($data, array $attachments = array())
+    public function deserializeStatementResult($data, array $attachments = []): StatementResult
     {
         try {
             return $this->serializer->deserialize(
                 $data,
-                'Xabbuh\XApi\Model\StatementResult',
+                StatementResult::class,
                 'json',
-                array(
-                    'xapi_attachments' => $attachments,
-                )
+                ['xapi_attachments' => $attachments]
             );
-        } catch (ExceptionInterface $e) {
-            throw new StatementResultDeserializationException($e->getMessage(), 0, $e);
+        } catch (ExceptionInterface $exception) {
+            throw new StatementResultDeserializationException($exception->getMessage(), 0, $exception);
         }
     }
 }

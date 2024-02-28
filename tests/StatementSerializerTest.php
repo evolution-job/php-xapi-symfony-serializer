@@ -17,7 +17,7 @@ use Xabbuh\XApi\Serializer\Tests\StatementSerializerTest as BaseStatementSeriali
 
 class StatementSerializerTest extends BaseStatementSerializerTest
 {
-    protected function createStatementSerializer()
+    protected function createStatementSerializer(): StatementSerializer
     {
         return new StatementSerializer(Serializer::createSerializer());
     }

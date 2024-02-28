@@ -21,25 +21,21 @@ use Xabbuh\XApi\Serializer\Exception\SerializationException;
  * Serializes {@link Activity activities} using the Symfony Serializer component.
  *
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
+ * @see \Xabbuh\XApi\Serializer\Symfony\Tests\ActivitySerializerTest
  */
 final class ActivitySerializer implements ActivitySerializerInterface
 {
-    private $serializer;
-
-    public function __construct(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
+    public function __construct(private readonly SerializerInterface $serializer) { }
 
     /**
      * {@inheritdoc}
      */
-    public function serializeActivity(Activity $activity)
+    public function serializeActivity(Activity $activity): string
     {
         try {
             return $this->serializer->serialize($activity, 'json');
-        } catch (SerializationException $e) {
-            throw new ActivitySerializationException($e->getMessage(), 0, $e);
+        } catch (SerializationException $serializationException) {
+            throw new ActivitySerializationException($serializationException->getMessage(), 0, $serializationException);
         }
     }
 }

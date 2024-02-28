@@ -3,6 +3,7 @@
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use Xabbuh\XApi\Model\IRI;
+use Xabbuh\XApi\Model\LanguageMap;
 use Xabbuh\XApi\Model\Verb;
 
 /**
@@ -15,17 +16,15 @@ final class VerbNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof Verb) {
-            return;
+            return null;
         }
 
-        $data = array(
-            'id' => $object->getId()->getValue(),
-        );
+        $data = ['id' => $object->getId()->getValue()];
 
-        if (null !== $display = $object->getDisplay()) {
+        if (($display = $object->getDisplay()) instanceof LanguageMap) {
             $data['display'] = $this->normalizeAttribute($display, $format, $context);
         }
 
@@ -35,7 +34,7 @@ final class VerbNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Verb;
     }
@@ -43,23 +42,23 @@ final class VerbNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
-        $id = IRI::fromString($data['id']);
+        $iri = IRI::fromString($data['id']);
         $display = null;
 
         if (isset($data['display'])) {
-            $display = $this->denormalizeData($data['display'], 'Xabbuh\XApi\Model\LanguageMap', $format, $context);
+            $display = $this->denormalizeData($data['display'], LanguageMap::class, $format, $context);
         }
 
-        return new Verb($id, $display);
+        return new Verb($iri, $display);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Verb' === $type;
+        return Verb::class === $type;
     }
 }

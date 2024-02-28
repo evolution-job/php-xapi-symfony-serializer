@@ -3,27 +3,29 @@
 namespace spec\Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\Interaction\InteractionComponent;
 
 class InteractionComponentNormalizerSpec extends ObjectBehavior
 {
-    function it_is_a_normalizer()
+    public function it_is_a_normalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\NormalizerInterface');
+        $this->shouldHaveType(NormalizerInterface::class);
     }
 
-    function it_supports_normalizing_interaction_component_objects()
+    public function it_supports_normalizing_interaction_component_objects(): void
     {
         $this->supportsNormalization(new InteractionComponent('test'))->shouldReturn(true);
     }
 
-    function it_is_a_denormalizer()
+    public function it_is_a_denormalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\DenormalizerInterface');
+        $this->shouldHaveType(DenormalizerInterface::class);
     }
 
-    function it_supports_denormalizing_to_interaction_component_objects()
+    public function it_supports_denormalizing_to_interaction_component_objects(): void
     {
-        $this->supportsDenormalization(array(), 'Xabbuh\XApi\Model\Interaction\InteractionComponent')->shouldReturn(true);
+        $this->supportsDenormalization([], InteractionComponent::class)->shouldReturn(true);
     }
 }

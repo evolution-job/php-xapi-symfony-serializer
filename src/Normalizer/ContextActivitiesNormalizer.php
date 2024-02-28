@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use stdClass;
 use Xabbuh\XApi\Model\ContextActivities;
 
 /**
@@ -23,13 +24,13 @@ final class ContextActivitiesNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): stdClass|array|null
     {
         if (!$object instanceof ContextActivities) {
-            return;
+            return null;
         }
 
-        $data = array();
+        $data = [];
 
         if (null !== $categoryActivities = $object->getCategoryActivities()) {
             $data['category'] = $this->normalizeAttribute($categoryActivities);
@@ -47,8 +48,8 @@ final class ContextActivitiesNormalizer extends Normalizer
             $data['other'] = $this->normalizeAttribute($otherActivities);
         }
 
-        if (empty($data)) {
-            return new \stdClass();
+        if ($data === []) {
+            return new stdClass();
         }
 
         return $data;
@@ -57,7 +58,7 @@ final class ContextActivitiesNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof ContextActivities;
     }
@@ -65,26 +66,26 @@ final class ContextActivitiesNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         $parentActivities = null;
         $groupingActivities = null;
         $categoryActivities = null;
         $otherActivities = null;
 
-        if (isset($data['parent']) && null !== $data['parent']) {
+        if (isset($data['parent'])) {
             $parentActivities = $this->denormalizeData($data['parent'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
         }
 
-        if (isset($data['grouping']) && null !== $data['grouping']) {
+        if (isset($data['grouping'])) {
             $groupingActivities = $this->denormalizeData($data['grouping'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
         }
 
-        if (isset($data['category']) && null !== $data['category']) {
+        if (isset($data['category'])) {
             $categoryActivities = $this->denormalizeData($data['category'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
         }
 
-        if (isset($data['other']) && null !== $data['other']) {
+        if (isset($data['other'])) {
             $otherActivities = $this->denormalizeData($data['other'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
         }
 
@@ -94,8 +95,8 @@ final class ContextActivitiesNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\ContextActivities' === $type;
+        return ContextActivities::class === $type;
     }
 }

@@ -3,16 +3,18 @@
 namespace spec\Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class StatementResultNormalizerSpec extends ObjectBehavior
 {
-    function it_is_a_normalizer()
+    public function it_is_a_normalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\NormalizerInterface');
+        $this->shouldHaveType(NormalizerInterface::class);
     }
 
-    function it_is_a_denormalizer()
+    public function it_is_a_denormalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\DenormalizerInterface');
+        $this->shouldHaveType(DenormalizerInterface::class);
     }
 }

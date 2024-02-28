@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+4.0.0
+-----
+
+* dropped support for Symfony < 5.4
+* dropped support for PHP < 8.1
+* All dependencies from php-xapi/* are now loaded from forks at `https://github.com/evolution-job/`
+
 3.0.0
 -----
 
@@ -21,11 +28,8 @@ CHANGELOG
 -----
 
 * added missing support for statement versions
-
 * dropped support for PHP < 5.6
-
 * allow `2.x` releases of the `php-xapi/model` package too
-
 * allow `3.x` releases of the `php-xapi/model` package too
 
 2.0.0

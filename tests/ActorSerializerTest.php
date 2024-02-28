@@ -17,7 +17,7 @@ use Xabbuh\XApi\Serializer\Tests\ActorSerializerTest as BaseActorSerializerTest;
 
 class ActorSerializerTest extends BaseActorSerializerTest
 {
-    protected function createActorSerializer()
+    protected function createActorSerializer(): ActorSerializer
     {
         return new ActorSerializer(Serializer::createSerializer());
     }

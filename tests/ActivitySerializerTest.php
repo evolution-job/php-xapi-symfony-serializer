@@ -17,7 +17,7 @@ use Xabbuh\XApi\Serializer\Tests\ActivitySerializerTest as BaseActivitySerialize
 
 class ActivitySerializerTest extends BaseActivitySerializerTest
 {
-    protected function createActivitySerializer()
+    protected function createActivitySerializer(): ActivitySerializer
     {
         return new ActivitySerializer(Serializer::createSerializer());
     }

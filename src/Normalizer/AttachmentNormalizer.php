@@ -11,9 +11,11 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use stdClass;
 use Xabbuh\XApi\Model\Attachment;
 use Xabbuh\XApi\Model\IRI;
 use Xabbuh\XApi\Model\IRL;
+use Xabbuh\XApi\Model\LanguageMap;
 
 /**
  * Denormalizes PHP arrays to {@link Attachment} objects.
@@ -25,25 +27,19 @@ final class AttachmentNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof Attachment) {
-            return;
+            return null;
         }
 
-        $data = array(
-            'usageType' => $object->getUsageType()->getValue(),
-            'contentType' => $object->getContentType(),
-            'length' => $object->getLength(),
-            'sha2' => $object->getSha2(),
-            'display' => $this->normalizeAttribute($object->getDisplay(), $format, $context),
-        );
+        $data = ['usageType' => $object->getUsageType()->getValue(), 'contentType' => $object->getContentType(), 'length' => $object->getLength(), 'sha2' => $object->getSha2(), 'display' => $this->normalizeAttribute($object->getDisplay(), $format, $context)];
 
-        if (null !== $description = $object->getDescription()) {
+        if (($description = $object->getDescription()) instanceof LanguageMap) {
             $data['description'] = $this->normalizeAttribute($description, $format, $context);
         }
 
-        if (null !== $fileUrl = $object->getFileUrl()) {
+        if (($fileUrl = $object->getFileUrl()) instanceof IRL) {
             $data['fileUrl'] = $fileUrl->getValue();
         }
 
@@ -53,20 +49,20 @@ final class AttachmentNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Attachment;
     }
 
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = []): Attachment
     {
-        $display = $this->denormalizeData($data['display'], 'Xabbuh\XApi\Model\LanguageMap', $format, $context);
+        $display = $this->denormalizeData($data['display'], LanguageMap::class, $format, $context);
         $description = null;
         $fileUrl = null;
         $content = null;
 
         if (isset($data['description'])) {
-            $description = $this->denormalizeData($data['description'], 'Xabbuh\XApi\Model\LanguageMap', $format, $context);
+            $description = $this->denormalizeData($data['description'], LanguageMap::class, $format, $context);
         }
 
         if (isset($data['fileUrl'])) {
@@ -80,8 +76,8 @@ final class AttachmentNormalizer extends Normalizer
         return new Attachment(IRI::fromString($data['usageType']), $data['contentType'], $data['length'], $data['sha2'], $display, $description, $fileUrl, $content);
     }
 
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Attachment' === $type;
+        return Attachment::class === $type;
     }
 }

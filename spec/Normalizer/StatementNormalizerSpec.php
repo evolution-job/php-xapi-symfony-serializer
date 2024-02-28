@@ -3,28 +3,30 @@
 namespace spec\Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\DataFixtures\StatementFixtures;
 use XApi\Fixtures\Json\StatementJsonFixtures;
 
 class StatementNormalizerSpec extends ObjectBehavior
 {
-    function it_is_a_normalizer()
+    public function it_is_a_normalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\NormalizerInterface');
+        $this->shouldHaveType(NormalizerInterface::class);
     }
 
-    function it_is_a_denormalizer()
+    public function it_is_a_denormalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\DenormalizerInterface');
+        $this->shouldHaveType(DenormalizerInterface::class);
     }
 
-    function it_supports_normalizing_statements()
+    public function it_supports_normalizing_statements(): void
     {
         $this->supportsNormalization(StatementFixtures::getMinimalStatement())->shouldBe(true);
     }
 
-    function it_supports_denormalizing_statements()
+    public function it_supports_denormalizing_statements(): void
     {
-        $this->supportsDenormalization(StatementJsonFixtures::getMinimalStatement(), 'Xabbuh\XApi\Model\Statement')->shouldBe(true);
+        $this->supportsDenormalization(StatementJsonFixtures::getMinimalStatement(), Statement::class)->shouldBe(true);
     }
 }

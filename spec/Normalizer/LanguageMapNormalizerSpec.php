@@ -3,32 +3,30 @@
 namespace spec\Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\LanguageMap;
 
 class LanguageMapNormalizerSpec extends ObjectBehavior
 {
-    function it_is_a_normalizer()
+    public function it_is_a_normalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\NormalizerInterface');
+        $this->shouldHaveType(NormalizerInterface::class);
     }
 
-    function it_is_a_denormalizer()
+    public function it_is_a_denormalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\DenormalizerInterface');
+        $this->shouldHaveType(DenormalizerInterface::class);
     }
 
-    function it_supports_normalizing_language_map_objects()
+    public function it_supports_normalizing_language_map_objects(): void
     {
         $this->supportsNormalization(new LanguageMap())->shouldReturn(true);
     }
 
-    function it_normalizes_language_map_instances_to_arrays()
+    public function it_normalizes_language_map_instances_to_arrays(): void
     {
-        $map = array(
-            'de-DE' => 'teilgenommen',
-            'en-GB' => 'attended',
-            'en-US' => 'attended',
-        );
+        $map = ['de-DE' => 'teilgenommen', 'en-GB' => 'attended', 'en-US' => 'attended'];
 
         $normalizedMap = $this->normalize(LanguageMap::create($map));
 
@@ -39,20 +37,16 @@ class LanguageMapNormalizerSpec extends ObjectBehavior
         $normalizedMap->shouldHaveKeyWithValue('en-US', 'attended');
     }
 
-    function it_supports_denormalizing_to_language_map_objects()
+    public function it_supports_denormalizing_to_language_map_objects(): void
     {
-        $this->supportsDenormalization(array(), 'Xabbuh\XApi\Model\LanguageMap')->shouldReturn(true);
+        $this->supportsDenormalization([], LanguageMap::class)->shouldReturn(true);
     }
 
-    function it_denormalizes_arrays_to_language_map_instances()
+    public function it_denormalizes_arrays_to_language_map_instances(): void
     {
-        $map = array(
-            'de-DE' => 'teilgenommen',
-            'en-GB' => 'attended',
-            'en-US' => 'attended',
-        );
+        $map = ['de-DE' => 'teilgenommen', 'en-GB' => 'attended', 'en-US' => 'attended'];
         $languageMap = LanguageMap::create($map);
 
-        $this->denormalize($map, 'Xabbuh\XApi\Model\LanguageMap')->equals($languageMap)->shouldReturn(true);
+        $this->denormalize($map, LanguageMap::class)->equals($languageMap)->shouldReturn(true);
     }
 }

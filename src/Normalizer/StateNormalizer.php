@@ -11,6 +11,8 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use JsonException;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\Agent;
 use Xabbuh\XApi\Model\State;
@@ -35,9 +37,8 @@ final class StateNormalizer extends Normalizer
             $array['activityId'] = $this->normalizeAttribute($activity, $format, $context);
         }
 
-        if (null !== $agent = $object->getAgent()) {
-            $array['agent'] = $this->normalizeAttribute($agent, $format, $context);
-        }
+        $agent = $object->getAgent();
+        $array['agent'] = $this->normalizeAttribute($agent, $format, $context);
 
         if (null !== $stateId = $object->getStateId()) {
             $array['stateId'] = $this->normalizeAttribute($stateId, $format, $context);
@@ -59,11 +60,13 @@ final class StateNormalizer extends Normalizer
         return $data instanceof State;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = [])
+    /**
+     * @throws JsonException
+     * @throws ExceptionInterface
+     */
+    public function denormalize($data, $type, $format = null, array $context = []): array|State
     {
-        /**
-         * set of States
-         */
+        // set of States
         if (isset($data[0])) {
             $stateIds = [];
             foreach ($data as $d) {
@@ -73,16 +76,13 @@ final class StateNormalizer extends Normalizer
             return $stateIds;
         }
 
-        /**
-         * Once
-         */
+        // Once
         return $this->denormarlizeState($data, $format);
     }
 
     /**
-     * @param ?array $state
      * @param ?string $format
-     * @return State
+     * @throws JsonException|ExceptionInterface
      */
     public function denormarlizeState(?array $state, string $format = null): State
     {

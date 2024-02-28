@@ -11,10 +11,15 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use DateTime;
 use Xabbuh\XApi\Common\Exception\UnsupportedStatementVersionException;
+use Xabbuh\XApi\Model\Actor;
+use Xabbuh\XApi\Model\Context;
+use Xabbuh\XApi\Model\Result;
 use Xabbuh\XApi\Model\Statement;
 use Xabbuh\XApi\Model\StatementId;
 use Xabbuh\XApi\Model\StatementObject;
+use Xabbuh\XApi\Model\Verb;
 
 /**
  * Normalizes and denormalizes xAPI statements.
@@ -26,39 +31,35 @@ final class StatementNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof Statement) {
             return null;
         }
 
-        $data = array(
-            'actor' => $this->normalizeAttribute($object->getActor(), $format, $context),
-            'verb' => $this->normalizeAttribute($object->getVerb(), $format, $context),
-            'object' => $this->normalizeAttribute($object->getObject(), $format, $context),
-        );
+        $data = ['actor' => $this->normalizeAttribute($object->getActor(), $format, $context), 'verb' => $this->normalizeAttribute($object->getVerb(), $format, $context), 'object' => $this->normalizeAttribute($object->getObject(), $format, $context)];
 
-        if (null !== $id = $object->getId()) {
+        if (($id = $object->getId()) instanceof StatementId) {
             $data['id'] = $id->getValue();
         }
 
-        if (null !== $authority = $object->getAuthority()) {
+        if (($authority = $object->getAuthority()) instanceof Actor) {
             $data['authority'] = $this->normalizeAttribute($authority, $format, $context);
         }
 
-        if (null !== $result = $object->getResult()) {
+        if (($result = $object->getResult()) instanceof Result) {
             $data['result'] = $this->normalizeAttribute($result, $format, $context);
         }
 
-        if (null !== $result = $object->getCreated()) {
+        if (($result = $object->getCreated()) instanceof DateTime) {
             $data['timestamp'] = $this->normalizeAttribute($result, $format, $context);
         }
 
-        if (null !== $result = $object->getStored()) {
+        if (($result = $object->getStored()) instanceof DateTime) {
             $data['stored'] = $this->normalizeAttribute($result, $format, $context);
         }
 
-        if (null !== $object->getContext()) {
+        if ($object->getContext() instanceof Context) {
             $data['context'] = $this->normalizeAttribute($object->getContext(), $format, $context);
         }
 
@@ -76,29 +77,30 @@ final class StatementNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Statement;
     }
 
     /**
      * {@inheritdoc}
+     * @throws UnsupportedStatementVersionException
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         $version = null;
 
         if (isset($data['version'])) {
             $version = $data['version'];
 
-            if (!preg_match('/^1\.0(?:\.\d+)?$/', $version)) {
+            if (preg_match('/^1\.0(?:\.\d+)?$/', (string)$version) === 0 || preg_match('/^1\.0(?:\.\d+)?$/', (string)$version) === 0 || preg_match('/^1\.0(?:\.\d+)?$/', (string)$version) === false) {
                 throw new UnsupportedStatementVersionException(sprintf('Statements at version "%s" are not supported.', $version));
             }
         }
 
         $id = isset($data['id']) ? StatementId::fromString($data['id']) : null;
-        $actor = $this->denormalizeData($data['actor'], 'Xabbuh\XApi\Model\Actor', $format, $context);
-        $verb = $this->denormalizeData($data['verb'], 'Xabbuh\XApi\Model\Verb', $format, $context);
+        $actor = $this->denormalizeData($data['actor'], Actor::class, $format, $context);
+        $verb = $this->denormalizeData($data['verb'], Verb::class, $format, $context);
         $object = $this->denormalizeData($data['object'], StatementObject::class, $format, $context);
 
         $result = null;
@@ -109,11 +111,11 @@ final class StatementNormalizer extends Normalizer
         $attachments = null;
 
         if (isset($data['result'])) {
-            $result = $this->denormalizeData($data['result'], 'Xabbuh\XApi\Model\Result', $format, $context);
+            $result = $this->denormalizeData($data['result'], Result::class, $format, $context);
         }
 
         if (isset($data['authority'])) {
-            $authority = $this->denormalizeData($data['authority'], 'Xabbuh\XApi\Model\Actor', $format, $context);
+            $authority = $this->denormalizeData($data['authority'], Actor::class, $format, $context);
         }
 
         if (isset($data['timestamp'])) {
@@ -125,7 +127,7 @@ final class StatementNormalizer extends Normalizer
         }
 
         if (isset($data['context'])) {
-            $statementContext = $this->denormalizeData($data['context'], 'Xabbuh\XApi\Model\Context', $format, $context);
+            $statementContext = $this->denormalizeData($data['context'], Context::class, $format, $context);
         }
 
         if (isset($data['attachments'])) {
@@ -138,8 +140,8 @@ final class StatementNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Statement' === $type;
+        return Statement::class === $type;
     }
 }

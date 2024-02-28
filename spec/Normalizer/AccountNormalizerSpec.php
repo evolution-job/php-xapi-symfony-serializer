@@ -3,38 +3,41 @@
 namespace spec\Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\DataFixtures\AccountFixtures;
+use Xabbuh\XApi\Model\Account;
 use Xabbuh\XApi\Model\IRL;
 use XApi\Fixtures\Json\AccountJsonFixtures;
 
 class AccountNormalizerSpec extends ObjectBehavior
 {
-    function it_is_a_normalizer()
+    public function it_is_a_normalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\NormalizerInterface');
+        $this->shouldHaveType(NormalizerInterface::class);
     }
 
-    function it_is_a_denormalizer()
+    public function it_is_a_denormalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\DenormalizerInterface');
+        $this->shouldHaveType(DenormalizerInterface::class);
     }
 
-    function it_supports_normalizing_accounts()
+    public function it_supports_normalizing_accounts(): void
     {
         $this->supportsNormalization(AccountFixtures::getTypicalAccount())->shouldBe(true);
     }
 
-    function it_denormalizes_accounts()
+    public function it_denormalizes_accounts(): void
     {
-        $account = $this->denormalize(array('homePage' => 'https://tincanapi.com', 'name' => 'test'), 'Xabbuh\XApi\Model\Account');
+        $account = $this->denormalize(['homePage' => 'https://tincanapi.com', 'name' => 'test'], Account::class);
 
-        $account->shouldBeAnInstanceOf('Xabbuh\XApi\Model\Account');
+        $account->shouldBeAnInstanceOf(Account::class);
         $account->getHomePage()->equals(IRL::fromString('https://tincanapi.com'))->shouldReturn(true);
         $account->getName()->shouldReturn('test');
     }
 
-    function it_supports_denormalizing_accounts()
+    public function it_supports_denormalizing_accounts(): void
     {
-        $this->supportsDenormalization(AccountJsonFixtures::getTypicalAccount(), 'Xabbuh\XApi\Model\Account')->shouldBe(true);
+        $this->supportsDenormalization(AccountJsonFixtures::getTypicalAccount(), Account::class)->shouldBe(true);
     }
 }

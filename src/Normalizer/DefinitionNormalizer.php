@@ -2,8 +2,10 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use stdClass;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Xabbuh\XApi\Model\Definition;
+use Xabbuh\XApi\Model\Extensions;
 use Xabbuh\XApi\Model\Interaction\ChoiceInteractionDefinition;
 use Xabbuh\XApi\Model\Interaction\FillInInteractionDefinition;
 use Xabbuh\XApi\Model\Interaction\InteractionDefinition;
@@ -17,6 +19,7 @@ use Xabbuh\XApi\Model\Interaction\SequencingInteractionDefinition;
 use Xabbuh\XApi\Model\Interaction\TrueFalseInteractionDefinition;
 use Xabbuh\XApi\Model\IRI;
 use Xabbuh\XApi\Model\IRL;
+use Xabbuh\XApi\Model\LanguageMap;
 
 /**
  * Normalizes and denormalizes PHP arrays to {@link Definition} instances.
@@ -28,36 +31,36 @@ final class DefinitionNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): stdClass|array|null
     {
         if (!$object instanceof Definition) {
-            return;
+            return null;
         }
 
-        $data = array();
+        $data = [];
 
-        if (null !== $name = $object->getName()) {
+        if (($name = $object->getName()) instanceof LanguageMap) {
             $data['name'] = $this->normalizeAttribute($name, $format, $context);
         }
 
-        if (null !== $description = $object->getDescription()) {
+        if (($description = $object->getDescription()) instanceof LanguageMap) {
             $data['description'] = $this->normalizeAttribute($description, $format, $context);
         }
 
-        if (null !== $type = $object->getType()) {
+        if (($type = $object->getType()) instanceof IRI) {
             $data['type'] = $type->getValue();
         }
 
-        if (null !== $moreInfo = $object->getMoreInfo()) {
+        if (($moreInfo = $object->getMoreInfo()) instanceof IRL) {
             $data['moreInfo'] = $moreInfo->getValue();
         }
 
-        if (null !== $extensions = $object->getExtensions()) {
+        if (($extensions = $object->getExtensions()) instanceof Extensions) {
             $data['extensions'] = $this->normalizeAttribute($extensions, $format, $context);
         }
 
         if ($object instanceof InteractionDefinition) {
-            if (null !== $correctResponsesPattern = $object->getCorrectResponsesPattern()) {
+            if (null !== $object->getCorrectResponsesPattern()) {
                 $data['correctResponsesPattern'] = $object->getCorrectResponsesPattern();
             }
 
@@ -68,6 +71,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (null !== $choices = $object->getChoices()) {
                         $data['choices'] = $this->normalizeAttribute($choices, $format, $context);
                     }
+
                     break;
                 case $object instanceof FillInInteractionDefinition:
                     $data['interactionType'] = 'fill-in';
@@ -78,6 +82,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (null !== $scale = $object->getScale()) {
                         $data['scale'] = $this->normalizeAttribute($scale, $format, $context);
                     }
+
                     break;
                 case $object instanceof LongFillInInteractionDefinition:
                     $data['interactionType'] = 'long-fill-in';
@@ -92,6 +97,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (null !== $target = $object->getTarget()) {
                         $data['target'] = $this->normalizeAttribute($target, $format, $context);
                     }
+
                     break;
                 case $object instanceof NumericInteractionDefinition:
                     $data['interactionType'] = 'numeric';
@@ -105,6 +111,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (null !== $steps = $object->getSteps()) {
                         $data['steps'] = $this->normalizeAttribute($steps, $format, $context);
                     }
+
                     break;
                 case $object instanceof SequencingInteractionDefinition:
                     $data['interactionType'] = 'sequencing';
@@ -112,6 +119,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (null !== $choices = $object->getChoices()) {
                         $data['choices'] = $this->normalizeAttribute($choices, $format, $context);
                     }
+
                     break;
                 case $object instanceof TrueFalseInteractionDefinition:
                     $data['interactionType'] = 'true-false';
@@ -120,7 +128,7 @@ final class DefinitionNormalizer extends Normalizer
         }
 
         if (empty($data)) {
-            return new \stdClass();
+            return new stdClass();
         }
 
         return $data;
@@ -129,7 +137,7 @@ final class DefinitionNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Definition;
     }
@@ -137,7 +145,7 @@ final class DefinitionNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         if (isset($data['interactionType'])) {
             switch ($data['interactionType']) {
@@ -147,6 +155,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (isset($data['choices'])) {
                         $definition = $definition->withChoices($this->denormalizeData($data['choices'], 'Xabbuh\XApi\Model\Interaction\InteractionComponent[]', $format, $context));
                     }
+
                     break;
                 case 'fill-in':
                     $definition = new FillInInteractionDefinition();
@@ -157,6 +166,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (isset($data['scale'])) {
                         $definition = $definition->withScale($this->denormalizeData($data['scale'], 'Xabbuh\XApi\Model\Interaction\InteractionComponent[]', $format, $context));
                     }
+
                     break;
                 case 'long-fill-in':
                     $definition = new LongFillInInteractionDefinition();
@@ -171,6 +181,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (isset($data['target'])) {
                         $definition = $definition->withTarget($this->denormalizeData($data['target'], 'Xabbuh\XApi\Model\Interaction\InteractionComponent[]', $format, $context));
                     }
+
                     break;
                 case 'numeric':
                     $definition = new NumericInteractionDefinition();
@@ -184,6 +195,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (isset($data['steps'])) {
                         $definition = $definition->withSteps($this->denormalizeData($data['steps'], 'Xabbuh\XApi\Model\Interaction\InteractionComponent[]', $format, $context));
                     }
+
                     break;
                 case 'sequencing':
                     $definition = new SequencingInteractionDefinition();
@@ -191,6 +203,7 @@ final class DefinitionNormalizer extends Normalizer
                     if (isset($data['choices'])) {
                         $definition = $definition->withChoices($this->denormalizeData($data['choices'], 'Xabbuh\XApi\Model\Interaction\InteractionComponent[]', $format, $context));
                     }
+
                     break;
                 case 'true-false':
                     $definition = new TrueFalseInteractionDefinition();
@@ -207,12 +220,12 @@ final class DefinitionNormalizer extends Normalizer
         }
 
         if (isset($data['name'])) {
-            $name = $this->denormalizeData($data['name'], 'Xabbuh\XApi\Model\LanguageMap', $format, $context);
+            $name = $this->denormalizeData($data['name'], LanguageMap::class, $format, $context);
             $definition = $definition->withName($name);
         }
 
         if (isset($data['description'])) {
-            $description = $this->denormalizeData($data['description'], 'Xabbuh\XApi\Model\LanguageMap', $format, $context);
+            $description = $this->denormalizeData($data['description'], LanguageMap::class, $format, $context);
             $definition = $definition->withDescription($description);
         }
 
@@ -225,7 +238,7 @@ final class DefinitionNormalizer extends Normalizer
         }
 
         if (isset($data['extensions'])) {
-            $extensions = $this->denormalizeData($data['extensions'], 'Xabbuh\XApi\Model\Extensions', $format, $context);
+            $extensions = $this->denormalizeData($data['extensions'], Extensions::class, $format, $context);
             $definition = $definition->withExtensions($extensions);
         }
 
@@ -235,21 +248,9 @@ final class DefinitionNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        $supportedDefinitionClasses = array(
-            'Xabbuh\XApi\Model\Definition',
-            'Xabbuh\XApi\Model\Interaction\ChoiceInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\FillInInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\LikertInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\LongFillInInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\MatchingInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\NumericInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\OtherInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\PerformanceInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\SequencingInteractionDefinition',
-            'Xabbuh\XApi\Model\Interaction\TrueFalseInteractionDefinition',
-        );
+        $supportedDefinitionClasses = [Definition::class, ChoiceInteractionDefinition::class, FillInInteractionDefinition::class, LikertInteractionDefinition::class, LongFillInInteractionDefinition::class, MatchingInteractionDefinition::class, NumericInteractionDefinition::class, OtherInteractionDefinition::class, PerformanceInteractionDefinition::class, SequencingInteractionDefinition::class, TrueFalseInteractionDefinition::class];
 
         return in_array($type, $supportedDefinitionClasses, true);
     }

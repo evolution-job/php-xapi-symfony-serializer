@@ -24,21 +24,19 @@ final class StatementResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof StatementResult) {
             return null;
         }
 
-        $data = array(
-            'statements' => array(),
-        );
+        $data = ['statements' => []];
 
         foreach ($object->getStatements() as $statement) {
             $data['statements'][] = $this->normalizeAttribute($statement, $format, $context);
         }
 
-        if (null !== $moreUrlPath = $object->getMoreUrlPath()) {
+        if (($moreUrlPath = $object->getMoreUrlPath()) instanceof IRL) {
             $data['more'] = $moreUrlPath->getValue();
         }
 
@@ -48,7 +46,7 @@ final class StatementResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof StatementResult;
     }
@@ -56,7 +54,7 @@ final class StatementResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         $statements = $this->denormalizeData($data['statements'], 'Xabbuh\XApi\Model\Statement[]', $format, $context);
         $moreUrlPath = null;
@@ -71,8 +69,8 @@ final class StatementResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\StatementResult' === $type;
+        return StatementResult::class === $type;
     }
 }

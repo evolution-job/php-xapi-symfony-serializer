@@ -24,22 +24,19 @@ final class AccountNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof Account) {
             return null;
         }
 
-        return array(
-            'name' => $object->getName(),
-            'homePage' => $object->getHomePage()->getValue(),
-        );
+        return ['name' => $object->getName(), 'homePage' => $object->getHomePage()->getValue()];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Account;
     }
@@ -47,7 +44,7 @@ final class AccountNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         $name = '';
         $homePage = '';
@@ -66,8 +63,8 @@ final class AccountNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Account' === $type;
+        return Account::class === $type;
     }
 }

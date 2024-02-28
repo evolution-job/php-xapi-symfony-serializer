@@ -17,7 +17,7 @@ use Xabbuh\XApi\Serializer\Tests\DocumentDataSerializerTest as BaseDocumentDataS
 
 class DocumentDataSerializerTest extends BaseDocumentDataSerializerTest
 {
-    protected function createDocumentDataSerializer()
+    protected function createDocumentDataSerializer(): DocumentDataSerializer
     {
         return new DocumentDataSerializer(Serializer::createSerializer());
     }

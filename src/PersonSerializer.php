@@ -24,25 +24,17 @@ use Xabbuh\XApi\Serializer\PersonSerializerInterface;
  */
 final class PersonSerializer implements PersonSerializerInterface
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    public function __construct(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
+    public function __construct(private readonly SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
      */
-    public function serializePerson(Person $person)
+    public function serializePerson(Person $person): string
     {
         try {
             return $this->serializer->serialize($person, 'json');
-        } catch (SerializationException $e) {
-            throw new PersonSerializationException($e->getMessage(), 0, $e);
+        } catch (SerializationException $serializationException) {
+            throw new PersonSerializationException($serializationException->getMessage(), 0, $serializationException);
         }
     }
 }

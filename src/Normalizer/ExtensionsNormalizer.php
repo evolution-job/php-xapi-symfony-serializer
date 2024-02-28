@@ -11,6 +11,8 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use SplObjectStorage;
+use stdClass;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\Extensions;
@@ -26,22 +28,22 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = [])
+    public function normalize($object, $format = null, array $context = []): stdClass|array|null
     {
         if (!$object instanceof Extensions) {
-            return;
+            return null;
         }
 
         $extensions = $object->getExtensions();
 
         if (count($extensions) === 0) {
-            return new \stdClass();
+            return new stdClass();
         }
 
         $data = [];
 
-        foreach ($extensions as $iri) {
-            $data[$iri->getValue()] = $extensions[$iri];
+        foreach ($extensions as $extension) {
+            $data[$extension->getValue()] = $extensions[$extension];
         }
 
         return $data;
@@ -50,7 +52,7 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Extensions;
     }
@@ -58,9 +60,9 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = [])
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
-        $extensions = new \SplObjectStorage();
+        $extensions = new SplObjectStorage();
 
         foreach ($data as $iri => $value) {
             $extensions->attach(IRI::fromString($iri), $value);
@@ -72,8 +74,8 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Extensions' === $type;
+        return Extensions::class === $type;
     }
 }

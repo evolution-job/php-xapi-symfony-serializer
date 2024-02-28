@@ -3,61 +3,59 @@
 namespace spec\Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Serializer\Exception\InvalidArgumentException;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\DataFixtures\ActorFixtures;
+use Xabbuh\XApi\Model\Agent;
 use XApi\Fixtures\Json\ActorJsonFixtures;
 
 class ActorNormalizerSpec extends ObjectBehavior
 {
-    function it_is_a_normalizer()
+    public function it_is_a_normalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\NormalizerInterface');
+        $this->shouldHaveType(NormalizerInterface::class);
     }
 
-    function it_is_a_denormalizer()
+    public function it_is_a_denormalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\DenormalizerInterface');
+        $this->shouldHaveType(DenormalizerInterface::class);
     }
 
-    function it_requires_an_iri_when_denormalizing_an_agent()
+    public function it_requires_an_iri_when_denormalizing_an_agent(): void
     {
         $this
-            ->shouldThrow('\Symfony\Component\Serializer\Exception\InvalidArgumentException')
-            ->during('denormalize', array(
-                array('objectType' => 'Agent'),
-                'Xabbuh\XApi\Model\Actor',
-            ))
-        ;
+            ->shouldThrow(InvalidArgumentException::class)
+            ->during('denormalize', [['objectType' => 'Agent'], Actor::class]);
     }
 
-    function it_can_denormalize_agents_with_mbox_sha1_sum()
+    public function it_can_denormalize_agents_with_mbox_sha1_sum(): void
     {
-        $data = array(
-            'mbox_sha1sum' => 'db77b9104b531ecbb0b967f6942549d0ba80fda1',
-        );
+        $data = ['mbox_sha1sum' => 'db77b9104b531ecbb0b967f6942549d0ba80fda1'];
 
-        $agent = $this->denormalize($data, 'Xabbuh\XApi\Model\Actor');
+        $agent = $this->denormalize($data, Actor::class);
 
-        $agent->shouldBeAnInstanceOf('Xabbuh\XApi\Model\Agent');
+        $agent->shouldBeAnInstanceOf(Agent::class);
         $agent->getInverseFunctionalIdentifier()->getMboxSha1Sum()->shouldReturn('db77b9104b531ecbb0b967f6942549d0ba80fda1');
     }
 
-    function it_supports_normalizing_agents()
+    public function it_supports_normalizing_agents(): void
     {
         $this->supportsNormalization(ActorFixtures::getTypicalAgent())->shouldBe(true);
     }
 
-    function it_supports_normalizing_groups()
+    public function it_supports_normalizing_groups(): void
     {
         $this->supportsNormalization(ActorFixtures::getTypicalGroup())->shouldBe(true);
     }
 
-    function it_supports_denormalizing_agents()
+    public function it_supports_denormalizing_agents(): void
     {
-        $this->supportsDenormalization(ActorJsonFixtures::getTypicalAgent(), 'Xabbuh\XApi\Model\Actor')->shouldBe(true);
+        $this->supportsDenormalization(ActorJsonFixtures::getTypicalAgent(), Actor::class)->shouldBe(true);
     }
 
-    function it_supports_denormalizing_groups()
+    public function it_supports_denormalizing_groups(): void
     {
-        $this->supportsDenormalization(ActorJsonFixtures::getTypicalGroup(), 'Xabbuh\XApi\Model\Actor')->shouldBe(true);
+        $this->supportsDenormalization(ActorJsonFixtures::getTypicalGroup(), Actor::class)->shouldBe(true);
     }
 }

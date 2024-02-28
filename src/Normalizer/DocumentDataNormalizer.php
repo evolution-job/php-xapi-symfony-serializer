@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use stdClass;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\DocumentData;
@@ -25,7 +26,7 @@ final class DocumentDataNormalizer implements DenormalizerInterface, NormalizerI
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof DocumentData) {
             return null;
@@ -37,7 +38,7 @@ final class DocumentDataNormalizer implements DenormalizerInterface, NormalizerI
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof DocumentData;
     }
@@ -45,7 +46,7 @@ final class DocumentDataNormalizer implements DenormalizerInterface, NormalizerI
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         return new DocumentData($data);
     }
@@ -53,8 +54,8 @@ final class DocumentDataNormalizer implements DenormalizerInterface, NormalizerI
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\DocumentData' === $type;
+        return DocumentData::class === $type;
     }
 }

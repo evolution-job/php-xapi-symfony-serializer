@@ -3,25 +3,27 @@
 namespace spec\Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\Attachment;
 use Xabbuh\XApi\Model\IRI;
 use Xabbuh\XApi\Model\LanguageMap;
 
 class AttachmentNormalizerSpec extends ObjectBehavior
 {
-    function it_is_a_normalizer()
+    public function it_is_a_normalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\NormalizerInterface');
+        $this->shouldHaveType(NormalizerInterface::class);
     }
 
-    function it_supports_normalizing_attachment_objects()
+    public function it_supports_normalizing_attachment_objects(): void
     {
         $attachment = new Attachment(
             IRI::fromString('http://id.tincanapi.com/attachment/supporting_media'),
             'text/plain',
             18,
             'bd1a58265d96a3d1981710dab8b1e1ed04a8d7557ea53ab0cf7b44c04fd01545',
-            LanguageMap::create(array('en-US' => 'Text attachment')),
+            LanguageMap::create(['en-US' => 'Text attachment']),
             null,
             null,
             'some text content'
@@ -30,13 +32,13 @@ class AttachmentNormalizerSpec extends ObjectBehavior
         $this->supportsNormalization($attachment)->shouldReturn(true);
     }
 
-    function it_is_a_denormalizer()
+    public function it_is_a_denormalizer(): void
     {
-        $this->shouldHaveType('Symfony\Component\Serializer\Normalizer\DenormalizerInterface');
+        $this->shouldHaveType(DenormalizerInterface::class);
     }
 
-    function it_supports_denormalizing_to_attachment_objects()
+    public function it_supports_denormalizing_to_attachment_objects(): void
     {
-        $this->supportsDenormalization(array(), 'Xabbuh\XApi\Model\Attachment')->shouldReturn(true);
+        $this->supportsDenormalization([], Attachment::class)->shouldReturn(true);
     }
 }

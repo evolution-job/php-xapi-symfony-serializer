@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use ArrayObject;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerAwareInterface;
@@ -23,43 +24,43 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class FilterNullValueNormalizer implements NormalizerInterface, SerializerAwareInterface
 {
-    private $normalizer;
+    private readonly PropertyNormalizer $propertyNormalizer;
 
     public function __construct()
     {
-        $this->normalizer = new PropertyNormalizer();
+        $this->propertyNormalizer = new PropertyNormalizer();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ArrayObject
     {
-        $data = $this->normalizer->normalize($object, $format, $context);
-        $filteredData = new \ArrayObject();
+        $data = $this->propertyNormalizer->normalize($object, $format, $context);
+        $arrayObject = new ArrayObject();
 
         foreach ($data as $key => $value) {
             if (null !== $value) {
-                $filteredData[$key] = $value;
+                $arrayObject[$key] = $value;
             }
         }
 
-        return $filteredData;
+        return $arrayObject;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
-        return $this->normalizer->supportsNormalization($data, $format);
+        return $this->propertyNormalizer->supportsNormalization($data, $format);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setSerializer(SerializerInterface $serializer)
+    public function setSerializer(SerializerInterface $serializer): void
     {
-        $this->normalizer->setSerializer($serializer);
+        $this->propertyNormalizer->setSerializer($serializer);
     }
 }

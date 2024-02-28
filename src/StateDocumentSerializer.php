@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony;
 
+use JsonException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Xabbuh\XApi\Model\StateDocument;
@@ -23,40 +24,33 @@ use Xabbuh\XApi\Serializer\StateDocumentSerializerInterface;
  */
 final class StateDocumentSerializer implements StateDocumentSerializerInterface
 {
-    /**
-     * @var SerializerInterface The underlying serializer
-     */
-    private $serializer;
+    public function __construct(private readonly SerializerInterface $serializer) { }
 
-    public function __construct(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
-
-    public function serializeStateDocument(StateDocument $stateDocument)
+    public function serializeStateDocument(StateDocument $stateDocument): string
     {
         try {
             return $this->serializer->serialize($stateDocument, 'json');
-        } catch (ExceptionInterface $e) {
-            throw new StateDocumentSerializationException($e->getMessage(), 0, $e);
+        } catch (ExceptionInterface $exception) {
+            throw new StateDocumentSerializationException($exception->getMessage(), 0, $exception);
         }
     }
 
-    public function deserializeStateDocument($data)
+    public function deserializeStateDocument($data): StateDocument
     {
-        $json = json_decode((string)$data, true);
-        $state['data'] = $json ?: $data;
-        $state = json_encode($state);
-
         try {
+
+            $json = json_decode((string)$data, true);
+            $state['data'] = $json ?: $data;
+            $state = json_encode($state, JSON_THROW_ON_ERROR);
+
             return $this->serializer->deserialize(
                 $state,
-                'Xabbuh\XApi\Model\StateDocument',
+                StateDocument::class,
                 'json'
             );
 
-        } catch (ExceptionInterface $e) {
-            throw new StateDocumentDeserializationException($e->getMessage(), 0, $e);
+        } catch (JsonException $exception) {
+            throw new StateDocumentDeserializationException($exception->getMessage(), 0, $exception);
         }
     }
 }

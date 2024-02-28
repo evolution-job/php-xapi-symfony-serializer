@@ -25,13 +25,13 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof LanguageMap) {
-            return;
+            return null;
         }
 
-        $map = array();
+        $map = [];
 
         foreach ($object->languageTags() as $languageTag) {
             $map[$languageTag] = $object[$languageTag];
@@ -43,7 +43,7 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof LanguageMap;
     }
@@ -51,7 +51,7 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         return LanguageMap::create($data);
     }
@@ -59,8 +59,8 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\LanguageMap' === $type;
+        return LanguageMap::class === $type;
     }
 }

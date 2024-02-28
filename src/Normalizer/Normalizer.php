@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Exception\LogicException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -22,17 +23,20 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 abstract class Normalizer implements DenormalizerInterface, NormalizerInterface, SerializerAwareInterface
 {
-    private $serializer;
+    private ?SerializerInterface $serializer = null;
 
     /**
      * {@inheritdoc}
      */
-    public function setSerializer(SerializerInterface $serializer)
+    public function setSerializer(SerializerInterface $serializer): void
     {
         $this->serializer = $serializer;
     }
 
-    protected function normalizeAttribute($value, $format = null, array $context = array())
+    /**
+     * @throws ExceptionInterface
+     */
+    protected function normalizeAttribute($value, ?string $format = null, array $context = [])
     {
         if (!$this->serializer instanceof NormalizerInterface) {
             throw new LogicException('Cannot normalize attribute because the injected serializer is not a normalizer');
@@ -41,7 +45,10 @@ abstract class Normalizer implements DenormalizerInterface, NormalizerInterface,
         return $this->serializer->normalize($value, $format, $context);
     }
 
-    protected function denormalizeData($data, $type, $format = null, array $context = array())
+    /**
+     * @throws ExceptionInterface
+     */
+    protected function denormalizeData($data, string $type, ?string $format = null, array $context = [])
     {
         if (!$this->serializer instanceof DenormalizerInterface) {
             throw new LogicException('Cannot denormalize because the injected serializer is not a denormalizer');

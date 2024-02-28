@@ -3,11 +3,12 @@
 namespace spec\Xabbuh\XApi\Serializer\Symfony;
 
 use PhpSpec\ObjectBehavior;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class SerializerSpec extends ObjectBehavior
 {
-    function it_creates_a_serializer()
+    public function it_creates_a_serializer(): void
     {
-        self::createSerializer()->shouldBeAnInstanceOf('Symfony\Component\Serializer\SerializerInterface');
+        self::createSerializer()->shouldBeAnInstanceOf(SerializerInterface::class);
     }
 }

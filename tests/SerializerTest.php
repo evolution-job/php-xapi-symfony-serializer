@@ -11,7 +11,10 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\SerializerInterface;
+use Xabbuh\XApi\DataFixtures\AttachmentFixtures;
 use Xabbuh\XApi\Model\Account;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\Actor;
@@ -27,505 +30,435 @@ use Xabbuh\XApi\Model\StatementReference;
 use Xabbuh\XApi\Model\SubStatement;
 use Xabbuh\XApi\Model\Verb;
 use Xabbuh\XApi\Serializer\Symfony\Serializer;
+use XApi\Fixtures\Json\AttachmentJsonFixtures;
 
 class SerializerTest extends TestCase
 {
-    private $serializer;
+    private SerializerInterface $serializer;
 
     protected function setUp(): void
     {
         $this->serializer = Serializer::createSerializer();
     }
 
-    /**
-     * @dataProvider serializeAccountData
-     */
-    public function testSerializeAccount(Account $account, $expectedJson)
+    #[DataProvider('serializeAccountData')]
+    public function testSerializeAccount(Account $account, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($account, 'json'));
     }
 
-    public function serializeAccountData()
+    public static function serializeAccountData(): array
     {
-        return $this->buildSerializeTestCases('Account');
+        return self::buildSerializeTestCases('Account');
     }
 
-    /**
-     * @dataProvider deserializeAccountData
-     */
-    public function testDeserializeAccount($json, Account $expectedAccount)
+    #[DataProvider('deserializeAccountData')]
+    public function testDeserializeAccount($json, Account $expectedAccount): void
     {
-        $account = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Account', 'json');
+        $account = $this->serializer->deserialize($json, Account::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Account', $account);
+        $this->assertInstanceOf(Account::class, $account);
         $this->assertTrue($expectedAccount->equals($account), 'Deserialized account has the expected properties');
     }
 
-    public function deserializeAccountData()
+    public static function deserializeAccountData(): array
     {
-        return $this->buildDeserializeTestCases('Account');
+        return self::buildDeserializeTestCases('Account');
     }
 
-    /**
-     * @dataProvider serializeActorData
-     */
-    public function testSerializeActor(Actor $actor, $expectedJson)
+    #[DataProvider('serializeActorData')]
+    public function testSerializeActor(Actor $actor, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($actor, 'json'));
     }
 
-    public function serializeActorData()
+    public static function serializeActorData(): array
     {
-        return $this->buildSerializeTestCases('Actor');
+        return self::buildSerializeTestCases('Actor');
     }
 
-    /**
-     * @dataProvider deserializeActorData
-     */
-    public function testDeserializeActor($json, Actor $expectedActor)
+    #[DataProvider('deserializeActorData')]
+    public function testDeserializeActor($json, Actor $expectedActor): void
     {
-        $actor = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Actor', 'json');
+        $actor = $this->serializer->deserialize($json, Actor::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Actor', $actor);
+        $this->assertInstanceOf(Actor::class, $actor);
         $this->assertTrue($expectedActor->equals($actor), 'Deserialized actor has the expected properties');
     }
 
-    public function deserializeActorData()
+    public static function deserializeActorData(): array
     {
-        return $this->buildDeserializeTestCases('Actor');
+        return self::buildDeserializeTestCases('Actor');
     }
 
-    /**
-     * @dataProvider serializeActivityData
-     */
-    public function testSerializeActivity(Activity $activity, $expectedJson)
+    #[DataProvider('serializeActivityData')]
+    public function testSerializeActivity(Activity $activity, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($activity, 'json'));
     }
 
-    public function serializeActivityData()
+    public static function serializeActivityData(): array
     {
-        return $this->buildSerializeTestCases('Activity');
+        return self::buildSerializeTestCases('Activity');
     }
 
-    /**
-     * @dataProvider deserializeActivityData
-     */
-    public function testDeserializeActivity($json, Activity $expectedActivity)
+    #[DataProvider('deserializeActivityData')]
+    public function testDeserializeActivity($json, Activity $expectedActivity): void
     {
-        $activity = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Activity', 'json');
+        $activity = $this->serializer->deserialize($json, Activity::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Activity', $activity);
+        $this->assertInstanceOf(Activity::class, $activity);
         $this->assertTrue($expectedActivity->equals($activity), 'Deserialized activity has the expected properties');
     }
 
-    public function deserializeActivityData()
+    public static function deserializeActivityData(): array
     {
-        return $this->buildDeserializeTestCases('Activity');
+        return self::buildDeserializeTestCases('Activity');
     }
 
-    /**
-     * @dataProvider serializeAttachmentData
-     */
-    public function testSerializeAttachment(Attachment $attachment, $expectedJson)
+    #[DataProvider('serializeAttachmentData')]
+    public function testSerializeAttachment(Attachment $attachment, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($attachment, 'json'));
     }
 
-    public function serializeAttachmentData()
+    /**
+     * @return array[]
+     */
+    public static function serializeAttachmentData(): array
     {
-        $tests = array();
+        $tests = [];
 
-        foreach (get_class_methods('Xabbuh\XApi\DataFixtures\AttachmentFixtures') as $method) {
-            if (false !== strpos($method, 'ForQuery')) {
+        foreach (get_class_methods(AttachmentFixtures::class) as $method) {
+            if (str_contains($method, 'ForQuery')) {
                 continue;
             }
 
-            $jsonFixture = json_decode(call_user_func(array('XApi\Fixtures\Json\AttachmentJsonFixtures', $method)));
+            $jsonFixture = json_decode((string)call_user_func([AttachmentJsonFixtures::class, $method]), false);
 
-            $tests[$method] = array(
-                call_user_func(array('Xabbuh\XApi\DataFixtures\AttachmentFixtures', $method)),
-                json_encode($jsonFixture->metadata),
-            );
+            $tests[$method] = [call_user_func([AttachmentFixtures::class, $method]), json_encode($jsonFixture->metadata)];
         }
 
         return $tests;
     }
 
-    /**
-     * @dataProvider deserializeAttachmentData
-     */
-    public function testDeserializeAttachment($json, $content, Attachment $expectedAttachment)
+    #[DataProvider('deserializeAttachmentData')]
+    public function testDeserializeAttachment($json, $content, Attachment $expectedAttachment): void
     {
-        $context = array();
+        $context = [];
 
         if (null !== $content) {
-            $context['xapi_attachments'] = array(
-                hash('sha256', $content) => array(
-                    'content' => $content,
-                )
-            );
+            $context['xapi_attachments'] = [hash('sha256', (string)$content) => ['content' => $content]];
         }
 
-        $attachment = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Attachment', 'json', $context);
+        $attachment = $this->serializer->deserialize($json, Attachment::class, 'json', $context);
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Attachment', $attachment);
+        $this->assertInstanceOf(Attachment::class, $attachment);
         $this->assertTrue($expectedAttachment->equals($attachment), 'Deserialized attachment has the expected properties');
     }
 
-    public function deserializeAttachmentData()
+    /**
+     * @return array
+     */
+    public static function deserializeAttachmentData(): array
     {
-        $tests = array();
+        $tests = [];
 
-        foreach (get_class_methods('XApi\Fixtures\Json\AttachmentJsonFixtures') as $method) {
-            $jsonFixture = json_decode(call_user_func(array('XApi\Fixtures\Json\AttachmentJsonFixtures', $method)));
-            $tests[$method] = array(
-                json_encode($jsonFixture->metadata),
-                isset($jsonFixture->content) ? $jsonFixture->content : null,
-                call_user_func(array('Xabbuh\XApi\DataFixtures\AttachmentFixtures', $method)),
-            );
+        foreach (get_class_methods(AttachmentJsonFixtures::class) as $method) {
+            $jsonFixture = json_decode((string)call_user_func([AttachmentJsonFixtures::class, $method]), false);
+            $tests[$method] = [json_encode($jsonFixture->metadata), $jsonFixture->content ?? null, call_user_func([AttachmentFixtures::class, $method])];
         }
 
         return $tests;
     }
 
-    /**
-     * @dataProvider serializeContextData
-     */
-    public function testSerializeContext(Context $context, $expectedJson)
+    #[DataProvider('serializeContextData')]
+    public function testSerializeContext(Context $context, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($context, 'json'));
     }
 
-    public function serializeContextData()
+    public static function serializeContextData(): array
     {
-        return $this->buildSerializeTestCases('Context');
+        return self::buildSerializeTestCases('Context');
     }
 
-    /**
-     * @dataProvider deserializeContextData
-     */
-    public function testDeserializeContext($json, Context $expectedContext)
+    #[DataProvider('deserializeContextData')]
+    public function testDeserializeContext($json, Context $expectedContext): void
     {
-        $context = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Context', 'json');
+        $context = $this->serializer->deserialize($json, Context::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Context', $context);
-        $this->assertTrue($expectedContext == $context, 'Deserialized context has the expected properties');
+        $this->assertInstanceOf(Context::class, $context);
+        $this->assertEquals($context, $expectedContext, 'Deserialized context has the expected properties');
     }
 
-    public function deserializeContextData()
+    public static function deserializeContextData(): array
     {
-        return $this->buildDeserializeTestCases('Context');
+        return self::buildDeserializeTestCases('Context');
     }
 
-    /**
-     * @dataProvider serializeContextActivitiesData
-     */
-    public function testSerializeContextActivities(ContextActivities $contextActivities, $expectedJson)
+    #[DataProvider('serializeContextActivitiesData')]
+    public function testSerializeContextActivities(ContextActivities $contextActivities, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($contextActivities, 'json'));
     }
 
-    public function serializeContextActivitiesData()
+    public static function serializeContextActivitiesData(): array
     {
-        return $this->buildSerializeTestCases('ContextActivities');
+        return self::buildSerializeTestCases('ContextActivities');
     }
 
-    /**
-     * @dataProvider deserializeContextActivitiesData
-     */
-    public function testDeserializeContextActivities($json, ContextActivities $expectedContextActivities)
+    #[DataProvider('deserializeContextActivitiesData')]
+    public function testDeserializeContextActivities($json, ContextActivities $expectedContextActivities): void
     {
-        $contextActivities = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\ContextActivities', 'json');
+        $contextActivities = $this->serializer->deserialize($json, ContextActivities::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\ContextActivities', $contextActivities);
-        $this->assertTrue($expectedContextActivities == $contextActivities, 'Deserialized context activities have the expected properties');
+        $this->assertInstanceOf(ContextActivities::class, $contextActivities);
+        $this->assertEquals($contextActivities, $expectedContextActivities, 'Deserialized context activities have the expected properties');
     }
 
-    public function deserializeContextActivitiesData()
+    public static function deserializeContextActivitiesData(): array
     {
-        return $this->buildDeserializeTestCases('ContextActivities');
+        return self::buildDeserializeTestCases('ContextActivities');
     }
 
-    /**
-     * @dataProvider serializeDefinitionData
-     */
-    public function testSerializeDefinition(Definition $definition, $expectedJson)
+    #[DataProvider('serializeDefinitionData')]
+    public function testSerializeDefinition(Definition $definition, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($definition, 'json'));
     }
 
-    public function serializeDefinitionData()
+    public static function serializeDefinitionData(): array
     {
-        return $this->buildSerializeTestCases('Definition');
+        return self::buildSerializeTestCases('Definition');
     }
 
-    /**
-     * @dataProvider deserializeDefinitionData
-     */
-    public function testDeserializeDefinition($json, Definition $expectedDefinition)
+    #[DataProvider('deserializeDefinitionData')]
+    public function testDeserializeDefinition($json, Definition $expectedDefinition): void
     {
-        $expectedClass = get_class($expectedDefinition);
+        $expectedClass = $expectedDefinition::class;
         $definition = $this->serializer->deserialize($json, $expectedClass, 'json');
 
-        $this->assertSame($expectedClass, get_class($definition), sprintf('Deserialized definition is an instance of "%s"', $expectedClass));
+        $this->assertInstanceOf($expectedClass, $definition, sprintf('Deserialized definition is an instance of "%s"', $expectedClass));
         $this->assertTrue($expectedDefinition->equals($definition), 'Deserialized definition has the expected properties');
     }
 
-    public function deserializeDefinitionData()
+    public static function deserializeDefinitionData(): array
     {
-        return $this->buildDeserializeTestCases('Definition');
+        return self::buildDeserializeTestCases('Definition');
     }
 
-    /**
-     * @dataProvider serializeExtensionsData
-     */
-    public function testSerializeExtensions(Extensions $extensions, $expectedJson)
+    #[DataProvider('serializeExtensionsData')]
+    public function testSerializeExtensions(Extensions $extensions, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($extensions, 'json'));
     }
 
-    public function serializeExtensionsData()
+    public static function serializeExtensionsData(): array
     {
-        return $this->buildSerializeTestCases('Extensions');
+        return self::buildSerializeTestCases('Extensions');
     }
 
-    /**
-     * @dataProvider deserializeExtensionsData
-     */
-    public function testDeserializeExtensions($json, Extensions $expectedExtensions)
+    #[DataProvider('deserializeExtensionsData')]
+    public function testDeserializeExtensions($json, Extensions $expectedExtensions): void
     {
-        $extensions = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Extensions', 'json');
+        $extensions = $this->serializer->deserialize($json, Extensions::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Extensions', $extensions);
+        $this->assertInstanceOf(Extensions::class, $extensions);
         $this->assertTrue($expectedExtensions->equals($expectedExtensions), 'Deserialized extensions have the expected properties');
     }
 
-    public function deserializeExtensionsData()
+    public static function deserializeExtensionsData(): array
     {
-        return $this->buildDeserializeTestCases('Extensions');
+        return self::buildDeserializeTestCases('Extensions');
     }
 
-    /**
-     * @dataProvider serializeInteractionComponentData
-     */
-    public function testSerializeInteractionComponent(InteractionComponent $interactionComponent, $expectedJson)
+    #[DataProvider('serializeInteractionComponentData')]
+    public function testSerializeInteractionComponent(InteractionComponent $interactionComponent, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($interactionComponent, 'json'));
     }
 
-    public function serializeInteractionComponentData()
+    public static function serializeInteractionComponentData(): array
     {
-        return $this->buildSerializeTestCases('InteractionComponent');
+        return self::buildSerializeTestCases('InteractionComponent');
     }
 
-    /**
-     * @dataProvider deserializeInteractionComponentData
-     */
-    public function testDeserializeInteractionComponent($json, InteractionComponent $expectedInteractionComponent)
+    #[DataProvider('deserializeInteractionComponentData')]
+    public function testDeserializeInteractionComponent($json, InteractionComponent $expectedInteractionComponent): void
     {
-        $interactionComponent = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Interaction\InteractionComponent', 'json');
+        $interactionComponent = $this->serializer->deserialize($json, InteractionComponent::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Interaction\InteractionComponent', $interactionComponent);
+        $this->assertInstanceOf(InteractionComponent::class, $interactionComponent);
         $this->assertTrue($expectedInteractionComponent->equals($interactionComponent), 'Deserialized interaction component has the expected properties');
     }
 
-    public function deserializeInteractionComponentData()
+    public static function deserializeInteractionComponentData(): array
     {
-        return $this->buildDeserializeTestCases('InteractionComponent');
+        return self::buildDeserializeTestCases('InteractionComponent');
     }
 
-    /**
-     * @dataProvider serializeResultData
-     */
-    public function testSerializeResult(Result $result, $expectedJson)
+    #[DataProvider('serializeResultData')]
+    public function testSerializeResult(Result $result, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($result, 'json'));
     }
 
-    public function serializeResultData()
+    public static function serializeResultData(): array
     {
-        return $this->buildSerializeTestCases('Result');
+        return self::buildSerializeTestCases('Result');
     }
 
-    /**
-     * @dataProvider deserializeResultData
-     */
-    public function testDeserializeResult($json, Result $expectedResult)
+    #[DataProvider('deserializeResultData')]
+    public function testDeserializeResult($json, Result $expectedResult): void
     {
-        $result = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Result', 'json');
+        $result = $this->serializer->deserialize($json, Result::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Result', $result);
+        $this->assertInstanceOf(Result::class, $result);
         $this->assertTrue($expectedResult->equals($result), 'Deserialized result has the expected properties');
     }
 
-    public function deserializeResultData()
+    public static function deserializeResultData(): array
     {
-        return $this->buildDeserializeTestCases('Result');
+        return self::buildDeserializeTestCases('Result');
     }
 
-    /**
-     * @dataProvider serializeScoreData
-     */
-    public function testSerializeScore(Score $score, $expectedJson)
+    #[DataProvider('serializeScoreData')]
+    public function testSerializeScore(Score $score, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($score, 'json'));
     }
 
-    public function serializeScoreData()
+    public static function serializeScoreData(): array
     {
-        return $this->buildSerializeTestCases('Score');
+        return self::buildSerializeTestCases('Score');
     }
 
-    /**
-     * @dataProvider deserializeScoreData
-     */
-    public function testDeserializeScore($json, Score $expectedScore)
+    #[DataProvider('deserializeScoreData')]
+    public function testDeserializeScore($json, Score $expectedScore): void
     {
-        $score = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Score', 'json');
+        $score = $this->serializer->deserialize($json, Score::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Score', $score);
+        $this->assertInstanceOf(Score::class, $score);
         $this->assertTrue($expectedScore->equals($score), 'Deserialized score has the expected properties');
     }
 
-    public function deserializeScoreData()
+    public static function deserializeScoreData(): array
     {
-        return $this->buildDeserializeTestCases('Score');
+        return self::buildDeserializeTestCases('Score');
     }
 
-    /**
-     * @dataProvider serializeStatementReferenceData
-     */
-    public function testSerializeStatementReference(StatementReference $statementReference, $expectedJson)
+    #[DataProvider('serializeStatementReferenceData')]
+    public function testSerializeStatementReference(StatementReference $statementReference, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($statementReference, 'json'));
     }
 
-    public function serializeStatementReferenceData()
+    public static function serializeStatementReferenceData(): array
     {
-        return $this->buildSerializeTestCases('StatementReference');
+        return self::buildSerializeTestCases('StatementReference');
     }
 
-    /**
-     * @dataProvider deserializeStatementReferenceData
-     */
-    public function testDeserializeStatementReference($json, StatementReference $expectedStatementReference)
+    #[DataProvider('deserializeStatementReferenceData')]
+    public function testDeserializeStatementReference($json, StatementReference $expectedStatementReference): void
     {
-        $statementReference = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\StatementReference', 'json');
+        $statementReference = $this->serializer->deserialize($json, StatementReference::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\StatementReference', $statementReference);
+        $this->assertInstanceOf(StatementReference::class, $statementReference);
         $this->assertTrue($expectedStatementReference->equals($statementReference), 'Deserialized StatementReference has the expected properties');
     }
 
-    public function deserializeStatementReferenceData()
+    public static function deserializeStatementReferenceData(): array
     {
-        return $this->buildDeserializeTestCases('StatementReference');
+        return self::buildDeserializeTestCases('StatementReference');
     }
 
-    /**
-     * @dataProvider serializeSubStatementData
-     */
-    public function testSerializeSubStatement(SubStatement $subStatement, $expectedJson)
+    #[DataProvider('serializeSubStatementData')]
+    public function testSerializeSubStatement(SubStatement $subStatement, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($subStatement, 'json'));
     }
 
-    public function serializeSubStatementData()
+    public static function serializeSubStatementData(): array
     {
-        return $this->buildSerializeTestCases('SubStatement');
+        return self::buildSerializeTestCases('SubStatement');
     }
 
-    /**
-     * @dataProvider deserializeSubStatementData
-     */
-    public function testDeserializeSubStatement($json, SubStatement $expectedSubStatement)
+    #[DataProvider('deserializeSubStatementData')]
+    public function testDeserializeSubStatement($json, SubStatement $expectedSubStatement): void
     {
-        $subStatement = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\SubStatement', 'json');
+        $subStatement = $this->serializer->deserialize($json, SubStatement::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\SubStatement', $subStatement);
+        $this->assertInstanceOf(SubStatement::class, $subStatement);
         $this->assertTrue($expectedSubStatement->equals($subStatement), 'Deserialized SubStatement has the expected properties');
     }
 
-    public function deserializeSubStatementData()
+    public static function deserializeSubStatementData(): array
     {
-        return $this->buildDeserializeTestCases('SubStatement');
+        return self::buildDeserializeTestCases('SubStatement');
     }
 
-    /**
-     * @dataProvider serializeVerbData
-     */
-    public function testSerializeVerb(Verb $verb, $expectedJson)
+    #[DataProvider('serializeVerbData')]
+    public function testSerializeVerb(Verb $verb, string $expectedJson): void
     {
         $this->assertJsonStringEqualsJsonString($expectedJson, $this->serializer->serialize($verb, 'json'));
     }
 
-    public function serializeVerbData()
+    public static function serializeVerbData(): array
     {
-        return $this->buildSerializeTestCases('Verb');
+        return self::buildSerializeTestCases('Verb');
     }
 
-    /**
-     * @dataProvider deserializeVerbData
-     */
-    public function testDeserializeVerb($json, Verb $expectedVerb)
+    #[DataProvider('deserializeVerbData')]
+    public function testDeserializeVerb($json, Verb $expectedVerb): void
     {
-        $verb = $this->serializer->deserialize($json, 'Xabbuh\XApi\Model\Verb', 'json');
+        $verb = $this->serializer->deserialize($json, Verb::class, 'json');
 
-        $this->assertInstanceOf('Xabbuh\XApi\Model\Verb', $verb);
+        $this->assertInstanceOf(Verb::class, $verb);
         $this->assertTrue($expectedVerb->equals($verb), 'Deserialized verb has the expected properties');
     }
 
-    public function deserializeVerbData()
+    public static function deserializeVerbData(): array
     {
-        return $this->buildDeserializeTestCases('Verb');
+        return self::buildDeserializeTestCases('Verb');
     }
 
-    private function buildSerializeTestCases($objectType)
+    private static function buildSerializeTestCases(string $objectType): array
     {
-        $tests = array();
+        $tests = [];
 
-        $phpFixturesClass = 'Xabbuh\XApi\DataFixtures\\'.$objectType.'Fixtures';
-        $jsonFixturesClass = 'XApi\Fixtures\Json\\'.$objectType.'JsonFixtures';
+        $phpFixturesClass = 'Xabbuh\XApi\DataFixtures\\' . $objectType . 'Fixtures';
+        $jsonFixturesClass = 'XApi\Fixtures\Json\\' . $objectType . 'JsonFixtures';
         $jsonFixturesMethods = get_class_methods($jsonFixturesClass);
 
         foreach (get_class_methods($phpFixturesClass) as $method) {
-            if (false !== strpos($method, 'ForQuery')) {
+            if (str_contains($method, 'ForQuery')) {
                 continue;
             }
 
             // serialized data will always contain type information
-            if (in_array($method.'WithType', $jsonFixturesMethods)) {
-                $jsonMethod = $method.'WithType';
-            } else {
-                $jsonMethod = $method;
-            }
+            $jsonMethod = in_array($method . 'WithType', $jsonFixturesMethods) ? $method . 'WithType' : $method;
 
-            $tests[$method] = array(
-                call_user_func(array($phpFixturesClass, $method)),
-                call_user_func(array($jsonFixturesClass, $jsonMethod)),
-            );
+            $tests[$method] = [call_user_func([$phpFixturesClass, $method]), call_user_func([$jsonFixturesClass, $jsonMethod])];
         }
 
         return $tests;
     }
 
-    private function buildDeserializeTestCases($objectType)
+    private static function buildDeserializeTestCases(string $objectType): array
     {
-        $tests = array();
+        $tests = [];
 
-        $jsonFixturesClass = 'XApi\Fixtures\Json\\'.$objectType.'JsonFixtures';
-        $phpFixturesClass = 'Xabbuh\XApi\DataFixtures\\'.$objectType.'Fixtures';
+        $jsonFixturesClass = 'XApi\Fixtures\Json\\' . $objectType . 'JsonFixtures';
+        $phpFixturesClass = 'Xabbuh\XApi\DataFixtures\\' . $objectType . 'Fixtures';
 
         foreach (get_class_methods($jsonFixturesClass) as $method) {
             // PHP objects do not contain the type information as a dedicated property
-            if ('WithType' === substr($method, -8)) {
+            if (str_ends_with($method, 'WithType')) {
                 continue;
             }
 
-            $tests[$method] = array(
-                call_user_func(array($jsonFixturesClass, $method)),
-                call_user_func(array($phpFixturesClass, $method)),
-            );
+            $tests[$method] = [call_user_func([$jsonFixturesClass, $method]), call_user_func([$phpFixturesClass, $method])];
         }
 
         return $tests;

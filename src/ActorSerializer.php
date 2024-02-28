@@ -22,40 +22,33 @@ use Xabbuh\XApi\Serializer\Exception\ActorSerializationException;
  * Serializes and deserializes {@link Actor actors} using the Symfony Serializer component.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
+ * @see \Xabbuh\XApi\Serializer\Symfony\Tests\ActorSerializerTest
  */
 final class ActorSerializer implements ActorSerializerInterface
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    public function __construct(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
+    public function __construct(private readonly SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
      */
-    public function serializeActor(Actor $actor)
+    public function serializeActor(Actor $actor): string
     {
         try {
             return $this->serializer->serialize($actor, 'json');
-        } catch (ExceptionInterface $e) {
-            throw new ActorSerializationException($e->getMessage(), 0, $e);
+        } catch (ExceptionInterface $exception) {
+            throw new ActorSerializationException($exception->getMessage(), 0, $exception);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function deserializeActor($data)
+    public function deserializeActor($data): Actor
     {
         try {
-            return $this->serializer->deserialize($data, 'Xabbuh\XApi\Model\Actor', 'json');
-        } catch (ExceptionInterface $e) {
-            throw new ActorDeserializationException($e->getMessage(), 0, $e);
+            return $this->serializer->deserialize($data, Actor::class, 'json');
+        } catch (ExceptionInterface $exception) {
+            throw new ActorDeserializationException($exception->getMessage(), 0, $exception);
         }
     }
 }

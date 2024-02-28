@@ -11,7 +11,10 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use stdClass;
+use Xabbuh\XApi\Model\Extensions;
 use Xabbuh\XApi\Model\Result;
+use Xabbuh\XApi\Model\Score;
 
 /**
  * Normalizes and denormalizes xAPI statement results.
@@ -23,16 +26,16 @@ final class ResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): stdClass|array|null
     {
         if (!$object instanceof Result) {
             return null;
         }
 
-        $data = array();
+        $data = [];
 
-        if (null !== $object->getScore()) {
-            $data['score'] = $this->normalizeAttribute($object->getScore(), 'Xabbuh\XApi\Model\Score', $context);
+        if ($object->getScore() instanceof Score) {
+            $data['score'] = $this->normalizeAttribute($object->getScore(), Score::class, $context);
         }
 
         if (null !== $success = $object->getSuccess()) {
@@ -51,12 +54,12 @@ final class ResultNormalizer extends Normalizer
             $data['duration'] = $duration;
         }
 
-        if (null !== $extensions = $object->getExtensions()) {
-            $data['extensions'] = $this->normalizeAttribute($extensions, 'Xabbuh\XApi\Model\Extensions', $context);
+        if (($extensions = $object->getExtensions()) instanceof Extensions) {
+            $data['extensions'] = $this->normalizeAttribute($extensions, Extensions::class, $context);
         }
 
-        if (empty($data)) {
-            return new \stdClass();
+        if ($data === []) {
+            return new stdClass();
         }
 
         return $data;
@@ -65,7 +68,7 @@ final class ResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Result;
     }
@@ -73,14 +76,14 @@ final class ResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
-        $score = isset($data['score']) ? $this->denormalizeData($data['score'], 'Xabbuh\XApi\Model\Score', $format, $context) : null;
-        $success = isset($data['success']) ? $data['success'] : null;
-        $completion = isset($data['completion']) ? $data['completion'] : null;
-        $response = isset($data['response']) ? $data['response'] : null;
-        $duration = isset($data['duration']) ? $data['duration'] : null;
-        $extensions = isset($data['extensions']) ? $this->denormalizeData($data['extensions'], 'Xabbuh\XApi\Model\Extensions', $format, $context) : null;
+        $score = isset($data['score']) ? $this->denormalizeData($data['score'], Score::class, $format, $context) : null;
+        $success = $data['success'] ?? null;
+        $completion = $data['completion'] ?? null;
+        $response = $data['response'] ?? null;
+        $duration = $data['duration'] ?? null;
+        $extensions = isset($data['extensions']) ? $this->denormalizeData($data['extensions'], Extensions::class, $format, $context) : null;
 
         return new Result($score, $success, $completion, $response, $duration, $extensions);
     }
@@ -88,8 +91,8 @@ final class ResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Result' === $type;
+        return Result::class === $type;
     }
 }

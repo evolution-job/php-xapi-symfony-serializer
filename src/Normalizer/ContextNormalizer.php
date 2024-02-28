@@ -11,7 +11,13 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use stdClass;
+use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Context;
+use Xabbuh\XApi\Model\ContextActivities;
+use Xabbuh\XApi\Model\Extensions;
+use Xabbuh\XApi\Model\Group;
+use Xabbuh\XApi\Model\StatementReference;
 
 /**
  * Normalizes and denormalizes xAPI statement contexts.
@@ -20,27 +26,27 @@ use Xabbuh\XApi\Model\Context;
  */
 final class ContextNormalizer extends Normalizer
 {
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): stdClass|array|null
     {
         if (!$object instanceof Context) {
-            return;
+            return null;
         }
 
-        $data = array();
+        $data = [];
 
         if (null !== $registration = $object->getRegistration()) {
             $data['registration'] = $registration;
         }
 
-        if (null !== $instructor = $object->getInstructor()) {
+        if (($instructor = $object->getInstructor()) instanceof Actor) {
             $data['instructor'] = $this->normalizeAttribute($instructor, $format, $context);
         }
 
-        if (null !== $team = $object->getTeam()) {
+        if (($team = $object->getTeam()) instanceof Group) {
             $data['team'] = $this->normalizeAttribute($team, $format, $context);
         }
 
-        if (null !== $contextActivities = $object->getContextActivities()) {
+        if (($contextActivities = $object->getContextActivities()) instanceof ContextActivities) {
             $data['contextActivities'] = $this->normalizeAttribute($contextActivities, $format, $context);
         }
 
@@ -56,27 +62,27 @@ final class ContextNormalizer extends Normalizer
             $data['language'] = $language;
         }
 
-        if (null !== $statement = $object->getStatement()) {
+        if (($statement = $object->getStatement()) instanceof StatementReference) {
             $data['statement'] = $this->normalizeAttribute($statement, $format, $context);
         }
 
-        if (null !== $extensions = $object->getExtensions()) {
+        if (($extensions = $object->getExtensions()) instanceof Extensions) {
             $data['extensions'] = $this->normalizeAttribute($extensions, $format, $context);
         }
 
-        if (empty($data)) {
-            return new \stdClass();
+        if ($data === []) {
+            return new stdClass();
         }
 
         return $data;
     }
 
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof Context;
     }
 
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = []): Context
     {
         $statementContext = new Context();
 
@@ -85,15 +91,15 @@ final class ContextNormalizer extends Normalizer
         }
 
         if (isset($data['instructor'])) {
-            $statementContext = $statementContext->withInstructor($this->denormalizeData($data['instructor'], 'Xabbuh\XApi\Model\Actor', $format, $context));
+            $statementContext = $statementContext->withInstructor($this->denormalizeData($data['instructor'], Actor::class, $format, $context));
         }
 
         if (isset($data['team'])) {
-            $statementContext = $statementContext->withTeam($this->denormalizeData($data['team'], 'Xabbuh\XApi\Model\Group', $format, $context));
+            $statementContext = $statementContext->withTeam($this->denormalizeData($data['team'], Group::class, $format, $context));
         }
 
         if (isset($data['contextActivities'])) {
-            $statementContext = $statementContext->withContextActivities($this->denormalizeData($data['contextActivities'], 'Xabbuh\XApi\Model\ContextActivities', $format, $context));
+            $statementContext = $statementContext->withContextActivities($this->denormalizeData($data['contextActivities'], ContextActivities::class, $format, $context));
         }
 
         if (isset($data['revision'])) {
@@ -109,18 +115,18 @@ final class ContextNormalizer extends Normalizer
         }
 
         if (isset($data['statement'])) {
-            $statementContext = $statementContext->withStatement($this->denormalizeData($data['statement'], 'Xabbuh\XApi\Model\StatementReference', $format, $context));
+            $statementContext = $statementContext->withStatement($this->denormalizeData($data['statement'], StatementReference::class, $format, $context));
         }
 
         if (isset($data['extensions'])) {
-            $statementContext = $statementContext->withExtensions($this->denormalizeData($data['extensions'], 'Xabbuh\XApi\Model\Extensions', $format, $context));
+            return $statementContext->withExtensions($this->denormalizeData($data['extensions'], Extensions::class, $format, $context));
         }
 
         return $statementContext;
     }
 
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Context' === $type;
+        return Context::class === $type;
     }
 }

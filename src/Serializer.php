@@ -40,41 +40,19 @@ use Xabbuh\XApi\Serializer\Symfony\Normalizer\VerbNormalizer;
  * for the Experience API.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
+ * @see \Xabbuh\XApi\Serializer\Symfony\Tests\SerializerTest
  */
 class Serializer
 {
     /**
      * Creates a new Serializer.
      *
-     * @return SerializerInterface The Serializer
+     * @return SymfonySerializer|SerializerInterface The Serializer
      */
-    public static function createSerializer()
+    public static function createSerializer(): SymfonySerializer|SerializerInterface
     {
-        $normalizers = [
-            new AccountNormalizer(),
-            new ActorNormalizer(),
-            new AttachmentNormalizer(),
-            new ContextNormalizer(),
-            new ContextActivitiesNormalizer(),
-            new DefinitionNormalizer(),
-            new DocumentDataNormalizer(),
-            new ExtensionsNormalizer(),
-            new InteractionComponentNormalizer(),
-            new LanguageMapNormalizer(),
-            new ObjectNormalizer(),
-            new ResultNormalizer(),
-            new StateNormalizer(),
-            new StatementNormalizer(),
-            new StatementResultNormalizer(),
-            new TimestampNormalizer(),
-            new VerbNormalizer(),
-            new ArrayDenormalizer(),
-            new FilterNullValueNormalizer(),
-            new PropertyNormalizer()
-        ];
-        $encoders = [
-            new JsonEncoder(),
-        ];
+        $normalizers = [new AccountNormalizer(), new ActorNormalizer(), new AttachmentNormalizer(), new ContextNormalizer(), new ContextActivitiesNormalizer(), new DefinitionNormalizer(), new DocumentDataNormalizer(), new ExtensionsNormalizer(), new InteractionComponentNormalizer(), new LanguageMapNormalizer(), new ObjectNormalizer(), new ResultNormalizer(), new StateNormalizer(), new StatementNormalizer(), new StatementResultNormalizer(), new TimestampNormalizer(), new VerbNormalizer(), new ArrayDenormalizer(), new FilterNullValueNormalizer(), new PropertyNormalizer()];
+        $encoders = [new JsonEncoder(),];
 
         return new SymfonySerializer($normalizers, $encoders);
     }

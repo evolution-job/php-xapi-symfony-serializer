@@ -11,31 +11,28 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\Interaction\InteractionComponent;
+use Xabbuh\XApi\Model\LanguageMap;
 
 /**
  * Denormalizes xAPI statement activity {@link InteractionComponent interaction components}.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-final class InteractionComponentNormalizer extends Normalizer implements DenormalizerInterface, NormalizerInterface
+final class InteractionComponentNormalizer extends Normalizer
 {
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): ?array
     {
         if (!$object instanceof InteractionComponent) {
-            return;
+            return null;
         }
 
-        $data = array(
-            'id' => $object->getId(),
-        );
+        $data = ['id' => $object->getId()];
 
-        if (null !== $description = $object->getDescription()) {
+        if (($description = $object->getDescription()) instanceof LanguageMap) {
             $data['description'] = $this->normalizeAttribute($description, $format, $context);
         }
 
@@ -45,7 +42,7 @@ final class InteractionComponentNormalizer extends Normalizer implements Denorma
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         return $data instanceof InteractionComponent;
     }
@@ -53,12 +50,12 @@ final class InteractionComponentNormalizer extends Normalizer implements Denorma
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
         $description = null;
 
         if (isset($data['description'])) {
-            $description = $this->denormalizeData($data['description'], 'Xabbuh\XApi\Model\LanguageMap', $format, $context);
+            $description = $this->denormalizeData($data['description'], LanguageMap::class, $format, $context);
         }
 
         return new InteractionComponent($data['id'], $description);
@@ -67,8 +64,8 @@ final class InteractionComponentNormalizer extends Normalizer implements Denorma
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
-        return 'Xabbuh\XApi\Model\Interaction\InteractionComponent' === $type;
+        return InteractionComponent::class === $type;
     }
 }

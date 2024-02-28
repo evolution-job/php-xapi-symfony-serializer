@@ -22,78 +22,67 @@ use Xabbuh\XApi\Serializer\StatementSerializerInterface;
  * Serializes and deserializes {@link Statement statements} using the Symfony Serializer component.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
+ * @see \Xabbuh\XApi\Serializer\Symfony\Tests\StatementSerializerTest
  */
 final class StatementSerializer implements StatementSerializerInterface
 {
-    /**
-     * @var SerializerInterface The underlying serializer
-     */
-    private $serializer;
-
-    public function __construct(SerializerInterface $serializer)
-    {
-        $this->serializer = $serializer;
-    }
+    public function __construct(private readonly SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
      */
-    public function serializeStatement(Statement $statement)
+    public function serializeStatement(Statement $statement): string
     {
         try {
             return $this->serializer->serialize($statement, 'json');
-        } catch (ExceptionInterface $e) {
-            throw new StatementSerializationException($e->getMessage(), 0, $e);
+        } catch (ExceptionInterface $exception) {
+            throw new StatementSerializationException($exception->getMessage(), 0, $exception);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function serializeStatements(array $statements)
+    public function serializeStatements(array $statements): string
     {
         try {
             return $this->serializer->serialize($statements, 'json');
-        } catch (ExceptionInterface $e) {
-            throw new StatementSerializationException($e->getMessage(), 0, $e);
+        } catch (ExceptionInterface $exception) {
+            throw new StatementSerializationException($exception->getMessage(), 0, $exception);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function deserializeStatement($data, array $attachments = array())
+    public function deserializeStatement($data, array $attachments = []): Statement
     {
         try {
             return $this->serializer->deserialize(
                 $data,
-                'Xabbuh\XApi\Model\Statement',
+                Statement::class,
                 'json',
-                array(
-                    'xapi_attachments' => $attachments,
-                )
+                ['xapi_attachments' => $attachments]
             );
-        } catch (ExceptionInterface $e) {
-            throw new StatementDeserializationException($e->getMessage(), 0, $e);
+        } catch (ExceptionInterface $exception) {
+            throw new StatementDeserializationException($exception->getMessage(), 0, $exception);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function deserializeStatements($data, array $attachments = array())
+    public function deserializeStatements($data, array $attachments = []): array
     {
         try {
             return $this->serializer->deserialize(
                 $data,
                 'Xabbuh\XApi\Model\Statement[]',
                 'json',
-                array(
-                    'xapi_attachments' => $attachments,
-                )
+                ['xapi_attachments' => $attachments]
             );
-        } catch (ExceptionInterface $e) {
-            throw new StatementDeserializationException($e->getMessage(), 0, $e);
+        } catch (ExceptionInterface $exception) {
+            throw new StatementDeserializationException($exception->getMessage(), 0, $exception);
         }
     }
 }

@@ -11,6 +11,9 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use DateTime;
+use DateTimeInterface;
+use Exception;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -24,16 +27,17 @@ final class TimestampNormalizer implements DenormalizerInterface, NormalizerInte
 {
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
-    public function denormalize($data, $class, $format = null, array $context = array())
+    public function denormalize($data, $type, $format = null, array $context = [])
     {
-        return new \DateTime($data);
+        return new DateTime($data);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
         return 'DateTime' === $type;
     }
@@ -41,10 +45,10 @@ final class TimestampNormalizer implements DenormalizerInterface, NormalizerInte
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = array())
+    public function normalize($object, $format = null, array $context = []): string
     {
-        if (!($object instanceof \DateTime || $object instanceof \DateTimeInterface)) {
-            throw new InvalidArgumentException(sprintf('Expected \DateTime object or object implementing \DateTimeInterface (got "%s").', is_object($object) ? get_class($object) : gettype($object)));
+        if (!$object instanceof DateTimeInterface) {
+            throw new InvalidArgumentException(sprintf('Expected \DateTime object or object implementing \DateTimeInterface (got "%s").', get_debug_type($object)));
         }
 
         return $object->format('c');
@@ -53,8 +57,8 @@ final class TimestampNormalizer implements DenormalizerInterface, NormalizerInte
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
-        return $data instanceof \DateTime || $data instanceof \DateTimeInterface;
+        return $data instanceof DateTimeInterface;
     }
 }
