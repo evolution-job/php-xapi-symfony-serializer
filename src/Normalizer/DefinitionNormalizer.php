@@ -2,7 +2,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
-use stdClass;
+use ArrayObject;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Xabbuh\XApi\Model\Definition;
 use Xabbuh\XApi\Model\Extensions;
@@ -31,7 +31,7 @@ final class DefinitionNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): stdClass|array|null
+    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
     {
         if (!$object instanceof Definition) {
             return null;
@@ -128,7 +128,7 @@ final class DefinitionNormalizer extends Normalizer
         }
 
         if (empty($data)) {
-            return new stdClass();
+            return new ArrayObject();
         }
 
         return $data;

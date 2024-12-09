@@ -11,7 +11,6 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
-use stdClass;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\DocumentData;
@@ -23,6 +22,15 @@ use Xabbuh\XApi\Model\DocumentData;
  */
 final class DocumentDataNormalizer implements DenormalizerInterface, NormalizerInterface
 {
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            'json'   => true,
+            'object' => true,
+            '*'      => false
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */

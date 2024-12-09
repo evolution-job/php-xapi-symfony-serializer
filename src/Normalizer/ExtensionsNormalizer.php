@@ -11,8 +11,8 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use ArrayObject;
 use SplObjectStorage;
-use stdClass;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\Model\Extensions;
@@ -25,10 +25,19 @@ use Xabbuh\XApi\Model\IRI;
  */
 final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInterface
 {
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            'json'   => true,
+            'object' => true,
+            '*'      => false
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): stdClass|array|null
+    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
     {
         if (!$object instanceof Extensions) {
             return null;
@@ -37,7 +46,7 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
         $extensions = $object->getExtensions();
 
         if (count($extensions) === 0) {
-            return new stdClass();
+            return new ArrayObject();
         }
 
         $data = [];

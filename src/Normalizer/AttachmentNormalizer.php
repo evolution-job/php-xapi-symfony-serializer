@@ -11,7 +11,6 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
-use stdClass;
 use Xabbuh\XApi\Model\Attachment;
 use Xabbuh\XApi\Model\IRI;
 use Xabbuh\XApi\Model\IRL;

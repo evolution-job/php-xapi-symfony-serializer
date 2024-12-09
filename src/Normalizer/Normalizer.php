@@ -25,6 +25,15 @@ abstract class Normalizer implements DenormalizerInterface, NormalizerInterface,
 {
     private ?SerializerInterface $serializer = null;
 
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            'json'   => true,
+            'object' => true,
+            '*'      => false
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */

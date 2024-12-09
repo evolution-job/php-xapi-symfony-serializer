@@ -42,6 +42,15 @@ final class TimestampNormalizer implements DenormalizerInterface, NormalizerInte
         return 'DateTime' === $type;
     }
 
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            'json'   => true,
+            'object' => true,
+            '*'      => false
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */

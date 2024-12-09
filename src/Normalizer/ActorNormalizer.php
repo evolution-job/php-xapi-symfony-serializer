@@ -11,7 +11,6 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
-use stdClass;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Xabbuh\XApi\Model\Account;
@@ -84,7 +83,7 @@ final class ActorNormalizer extends Normalizer
             return $this->denormalizeGroup($name, $data, $inverseFunctionalIdentifier, $format, $context);
         }
 
-        if (null === $inverseFunctionalIdentifier) {
+        if (!$inverseFunctionalIdentifier instanceof InverseFunctionalIdentifier) {
             throw new InvalidArgumentException('Missing inverse functional identifier for agent.');
         }
 

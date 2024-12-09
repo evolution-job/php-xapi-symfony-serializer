@@ -11,7 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
-use stdClass;
+use ArrayObject;
 use Xabbuh\XApi\Model\ContextActivities;
 
 /**
@@ -24,7 +24,7 @@ final class ContextActivitiesNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): stdClass|array|null
+    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
     {
         if (!$object instanceof ContextActivities) {
             return null;
@@ -49,7 +49,7 @@ final class ContextActivitiesNormalizer extends Normalizer
         }
 
         if ($data === []) {
-            return new stdClass();
+            return new ArrayObject();
         }
 
         return $data;

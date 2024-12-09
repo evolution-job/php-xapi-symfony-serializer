@@ -157,9 +157,6 @@ class SerializerTest extends TestCase
         $this->assertTrue($expectedAttachment->equals($attachment), 'Deserialized attachment has the expected properties');
     }
 
-    /**
-     * @return array
-     */
     public static function deserializeAttachmentData(): array
     {
         $tests = [];

@@ -31,6 +31,15 @@ class FilterNullValueNormalizer implements NormalizerInterface, SerializerAwareI
         $this->propertyNormalizer = new PropertyNormalizer();
     }
 
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            'json'   => true,
+            'object' => true,
+            '*'      => false
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */

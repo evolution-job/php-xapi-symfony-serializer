@@ -11,7 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
-use stdClass;
+use ArrayObject;
 use Xabbuh\XApi\Model\Extensions;
 use Xabbuh\XApi\Model\Result;
 use Xabbuh\XApi\Model\Score;
@@ -26,7 +26,7 @@ final class ResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): stdClass|array|null
+    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
     {
         if (!$object instanceof Result) {
             return null;
@@ -59,7 +59,7 @@ final class ResultNormalizer extends Normalizer
         }
 
         if ($data === []) {
-            return new stdClass();
+            return new ArrayObject();
         }
 
         return $data;

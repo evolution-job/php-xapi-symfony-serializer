@@ -49,14 +49,15 @@
         "php-xapi/exception": "^0.2",
         "php-xapi/model": "^3.3",
         "php-xapi/serializer": "^4.0",
-        "symfony/serializer": "^5.4"
+        "symfony/serializer": "6.4.*",
+        "symfony/property-access": "^6.4"
     },
     "require-dev": {
         "php-xapi/json-test-fixtures": "^2.2",
         "php-xapi/test-fixtures": "^1.2",
         "phpspec/phpspec": "^7.0",
         "phpunit/phpunit": "^10.0",
-        "symfony/phpunit-bridge": "^5.4"
+        "symfony/phpunit-bridge": "6.4.*"
     },
     "minimum-stability": "stable",
     "provide": {

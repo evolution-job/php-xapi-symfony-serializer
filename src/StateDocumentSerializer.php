@@ -49,8 +49,8 @@ final class StateDocumentSerializer implements StateDocumentSerializerInterface
                 'json'
             );
 
-        } catch (JsonException $exception) {
-            throw new StateDocumentDeserializationException($exception->getMessage(), 0, $exception);
+        } catch (JsonException $jsonException) {
+            throw new StateDocumentDeserializationException($jsonException->getMessage(), 0, $jsonException);
         }
     }
 }

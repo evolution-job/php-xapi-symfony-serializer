@@ -22,6 +22,15 @@ use Xabbuh\XApi\Model\LanguageMap;
  */
 final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerInterface
 {
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            'json'   => true,
+            'object' => true,
+            '*'      => false
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */

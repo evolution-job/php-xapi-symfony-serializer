@@ -31,10 +31,10 @@ final class DocumentDataSerializer implements DocumentDataSerializerInterface
     /**
      * {@inheritDoc}
      */
-    public function serializeDocumentData(DocumentData $data): string
+    public function serializeDocumentData(DocumentData $documentData): string
     {
         try {
-            return $this->serializer->serialize($data, 'json');
+            return $this->serializer->serialize($documentData, 'json');
         } catch (ExceptionInterface $exception) {
             throw new DocumentDataSerializationException($exception->getMessage(), 0, $exception);
         }
