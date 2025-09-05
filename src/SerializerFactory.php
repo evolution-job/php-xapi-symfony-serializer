@@ -26,11 +26,11 @@ use Xabbuh\XApi\Serializer\StatementSerializerInterface;
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-final class SerializerFactory implements SerializerFactoryInterface
+final readonly class SerializerFactory implements SerializerFactoryInterface
 {
-    private readonly SerializerInterface|\Symfony\Component\Serializer\Serializer $serializer;
+    private SerializerInterface|\Symfony\Component\Serializer\Serializer $serializer;
 
-    public function __construct(SerializerInterface $serializer = null)
+    public function __construct(?SerializerInterface $serializer = null)
     {
         $this->serializer = $serializer instanceof SerializerInterface ? $serializer : Serializer::createSerializer();
     }

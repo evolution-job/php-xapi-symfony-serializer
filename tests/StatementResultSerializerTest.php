@@ -13,9 +13,9 @@ namespace Xabbuh\XApi\Serializer\Symfony\Tests;
 
 use Xabbuh\XApi\Serializer\Symfony\Serializer;
 use Xabbuh\XApi\Serializer\Symfony\StatementResultSerializer;
-use Xabbuh\XApi\Serializer\Tests\StatementResultSerializerTest as BaseStatementResultSerializerTest;
+use Xabbuh\XApi\Serializer\Tests\StatementResultSerializerTestCase;
 
-class StatementResultSerializerTest extends BaseStatementResultSerializerTest
+class StatementResultSerializerTest extends StatementResultSerializerTestCase
 {
     protected function createStatementResultSerializer(): StatementResultSerializer
     {
