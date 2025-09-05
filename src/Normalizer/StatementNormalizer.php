@@ -31,53 +31,53 @@ final class StatementNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof Statement) {
+        if (!$data instanceof Statement) {
             return null;
         }
 
-        $data = ['actor' => $this->normalizeAttribute($object->getActor(), $format, $context), 'verb' => $this->normalizeAttribute($object->getVerb(), $format, $context), 'object' => $this->normalizeAttribute($object->getObject(), $format, $context)];
+        $map = ['actor' => $this->normalizeAttribute($data->getActor(), $format, $context), 'verb' => $this->normalizeAttribute($data->getVerb(), $format, $context), 'object' => $this->normalizeAttribute($data->getObject(), $format, $context)];
 
-        if (($id = $object->getId()) instanceof StatementId) {
-            $data['id'] = $id->getValue();
+        if (($id = $data->getId()) instanceof StatementId) {
+            $map['id'] = $id->getValue();
         }
 
-        if (($authority = $object->getAuthority()) instanceof Actor) {
-            $data['authority'] = $this->normalizeAttribute($authority, $format, $context);
+        if (($authority = $data->getAuthority()) instanceof Actor) {
+            $map['authority'] = $this->normalizeAttribute($authority, $format, $context);
         }
 
-        if (($result = $object->getResult()) instanceof Result) {
-            $data['result'] = $this->normalizeAttribute($result, $format, $context);
+        if (($result = $data->getResult()) instanceof Result) {
+            $map['result'] = $this->normalizeAttribute($result, $format, $context);
         }
 
-        if (($result = $object->getCreated()) instanceof DateTime) {
-            $data['timestamp'] = $this->normalizeAttribute($result, $format, $context);
+        if (($result = $data->getCreated()) instanceof DateTime) {
+            $map['timestamp'] = $this->normalizeAttribute($result, $format, $context);
         }
 
-        if (($result = $object->getStored()) instanceof DateTime) {
-            $data['stored'] = $this->normalizeAttribute($result, $format, $context);
+        if (($result = $data->getStored()) instanceof DateTime) {
+            $map['stored'] = $this->normalizeAttribute($result, $format, $context);
         }
 
-        if ($object->getContext() instanceof Context) {
-            $data['context'] = $this->normalizeAttribute($object->getContext(), $format, $context);
+        if ($data->getContext() instanceof Context) {
+            $map['context'] = $this->normalizeAttribute($data->getContext(), $format, $context);
         }
 
-        if (null !== $attachments = $object->getAttachments()) {
-            $data['attachments'] = $this->normalizeAttribute($attachments, $format, $context);
+        if (null !== $attachments = $data->getAttachments()) {
+            $map['attachments'] = $this->normalizeAttribute($attachments, $format, $context);
         }
 
-        if (null !== $version = $object->getVersion()) {
-            $data['version'] = $version;
+        if (null !== $version = $data->getVersion()) {
+            $map['version'] = $version;
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Statement;
     }
@@ -86,7 +86,7 @@ final class StatementNormalizer extends Normalizer
      * {@inheritdoc}
      * @throws UnsupportedStatementVersionException
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): Statement
     {
         $version = null;
 
@@ -140,7 +140,7 @@ final class StatementNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return Statement::class === $type;
     }

@@ -57,7 +57,7 @@ abstract class Normalizer implements DenormalizerInterface, NormalizerInterface,
     /**
      * @throws ExceptionInterface
      */
-    protected function denormalizeData($data, string $type, ?string $format = null, array $context = [])
+    protected function denormalizeData(mixed $data, string $type, ?string $format = null, array $context = [])
     {
         if (!$this->serializer instanceof DenormalizerInterface) {
             throw new LogicException('Cannot denormalize because the injected serializer is not a denormalizer');
