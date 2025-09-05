@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony;
 
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Xabbuh\XApi\Model\Person;
 use Xabbuh\XApi\Serializer\Exception\PersonSerializationException;
@@ -22,9 +23,9 @@ use Xabbuh\XApi\Serializer\PersonSerializerInterface;
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-final class PersonSerializer implements PersonSerializerInterface
+final readonly class PersonSerializer implements PersonSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
@@ -33,7 +34,7 @@ final class PersonSerializer implements PersonSerializerInterface
     {
         try {
             return $this->serializer->serialize($person, 'json');
-        } catch (SerializationException $serializationException) {
+        } catch (SerializationException|ExceptionInterface $serializationException) {
             throw new PersonSerializationException($serializationException->getMessage(), 0, $serializationException);
         }
     }

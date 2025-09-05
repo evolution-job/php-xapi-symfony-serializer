@@ -24,41 +24,41 @@ final class ContextActivitiesNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ArrayObject|array|null
     {
-        if (!$object instanceof ContextActivities) {
+        if (!$data instanceof ContextActivities) {
             return null;
         }
 
-        $data = [];
+        $map = [];
 
-        if (null !== $categoryActivities = $object->getCategoryActivities()) {
-            $data['category'] = $this->normalizeAttribute($categoryActivities);
+        if (null !== $categoryActivities = $data->getCategoryActivities()) {
+            $map['category'] = $this->normalizeAttribute($categoryActivities);
         }
 
-        if (null !== $parentActivities = $object->getParentActivities()) {
-            $data['parent'] = $this->normalizeAttribute($parentActivities);
+        if (null !== $parentActivities = $data->getParentActivities()) {
+            $map['parent'] = $this->normalizeAttribute($parentActivities);
         }
 
-        if (null !== $groupingActivities = $object->getGroupingActivities()) {
-            $data['grouping'] = $this->normalizeAttribute($groupingActivities);
+        if (null !== $groupingActivities = $data->getGroupingActivities()) {
+            $map['grouping'] = $this->normalizeAttribute($groupingActivities);
         }
 
-        if (null !== $otherActivities = $object->getOtherActivities()) {
-            $data['other'] = $this->normalizeAttribute($otherActivities);
+        if (null !== $otherActivities = $data->getOtherActivities()) {
+            $map['other'] = $this->normalizeAttribute($otherActivities);
         }
 
-        if ($data === []) {
+        if ($map === []) {
             return new ArrayObject();
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof ContextActivities;
     }
@@ -66,7 +66,7 @@ final class ContextActivitiesNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): ContextActivities
     {
         $parentActivities = null;
         $groupingActivities = null;
@@ -95,7 +95,7 @@ final class ContextActivitiesNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return ContextActivities::class === $type;
     }

@@ -24,9 +24,9 @@ use Xabbuh\XApi\Serializer\Exception\DocumentDataSerializationException;
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  * @see \Xabbuh\XApi\Serializer\Symfony\Tests\DocumentDataSerializerTest
  */
-final class DocumentDataSerializer implements DocumentDataSerializerInterface
+final readonly class DocumentDataSerializer implements DocumentDataSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}

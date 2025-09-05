@@ -124,6 +124,7 @@ class SerializerTest extends TestCase
 
     /**
      * @return array[]
+     * @throws \JsonException
      */
     public static function serializeAttachmentData(): array
     {
@@ -134,7 +135,7 @@ class SerializerTest extends TestCase
                 continue;
             }
 
-            $jsonFixture = json_decode((string)call_user_func([AttachmentJsonFixtures::class, $method]), false);
+            $jsonFixture = json_decode((string)call_user_func([AttachmentJsonFixtures::class, $method]), false, 512, JSON_THROW_ON_ERROR);
 
             $tests[$method] = [call_user_func([AttachmentFixtures::class, $method]), json_encode($jsonFixture->metadata)];
         }
@@ -162,8 +163,8 @@ class SerializerTest extends TestCase
         $tests = [];
 
         foreach (get_class_methods(AttachmentJsonFixtures::class) as $method) {
-            $jsonFixture = json_decode((string)call_user_func([AttachmentJsonFixtures::class, $method]), false);
-            $tests[$method] = [json_encode($jsonFixture->metadata), $jsonFixture->content ?? null, call_user_func([AttachmentFixtures::class, $method])];
+            $jsonFixture = json_decode((string)call_user_func([AttachmentJsonFixtures::class, $method]), false, 512, JSON_THROW_ON_ERROR);
+            $tests[$method] = [json_encode($jsonFixture->metadata, JSON_THROW_ON_ERROR), $jsonFixture->content ?? null, call_user_func([AttachmentFixtures::class, $method])];
         }
 
         return $tests;

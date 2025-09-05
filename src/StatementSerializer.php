@@ -24,9 +24,9 @@ use Xabbuh\XApi\Serializer\StatementSerializerInterface;
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  * @see \Xabbuh\XApi\Serializer\Symfony\Tests\StatementSerializerTest
  */
-final class StatementSerializer implements StatementSerializerInterface
+final readonly class StatementSerializer implements StatementSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}

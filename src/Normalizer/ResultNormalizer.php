@@ -26,49 +26,49 @@ final class ResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ArrayObject|array|null
     {
-        if (!$object instanceof Result) {
+        if (!$data instanceof Result) {
             return null;
         }
 
-        $data = [];
+        $map = [];
 
-        if ($object->getScore() instanceof Score) {
-            $data['score'] = $this->normalizeAttribute($object->getScore(), Score::class, $context);
+        if ($data->getScore() instanceof Score) {
+            $map['score'] = $this->normalizeAttribute($data->getScore(), Score::class, $context);
         }
 
-        if (null !== $success = $object->getSuccess()) {
-            $data['success'] = $success;
+        if (null !== $success = $data->getSuccess()) {
+            $map['success'] = $success;
         }
 
-        if (null !== $completion = $object->getCompletion()) {
-            $data['completion'] = $completion;
+        if (null !== $completion = $data->getCompletion()) {
+            $map['completion'] = $completion;
         }
 
-        if (null !== $response = $object->getResponse()) {
-            $data['response'] = $response;
+        if (null !== $response = $data->getResponse()) {
+            $map['response'] = $response;
         }
 
-        if (null !== $duration = $object->getDuration()) {
-            $data['duration'] = $duration;
+        if (null !== $duration = $data->getDuration()) {
+            $map['duration'] = $duration;
         }
 
-        if (($extensions = $object->getExtensions()) instanceof Extensions) {
-            $data['extensions'] = $this->normalizeAttribute($extensions, Extensions::class, $context);
+        if (($extensions = $data->getExtensions()) instanceof Extensions) {
+            $map['extensions'] = $this->normalizeAttribute($extensions, Extensions::class, $context);
         }
 
-        if ($data === []) {
+        if ($map === []) {
             return new ArrayObject();
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Result;
     }
@@ -76,7 +76,7 @@ final class ResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): Result
     {
         $score = isset($data['score']) ? $this->denormalizeData($data['score'], Score::class, $format, $context) : null;
         $success = $data['success'] ?? null;
@@ -91,7 +91,7 @@ final class ResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return Result::class === $type;
     }

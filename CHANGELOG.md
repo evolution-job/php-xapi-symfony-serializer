@@ -1,6 +1,17 @@
 CHANGELOG
 =========
 
+6.0.0
+-----
+
+* dropped support for Symfony < 7.3
+* dropped support for PHP < 8.4
+
+5.0.0
+-----
+
+* dropped support for Symfony < 6.4
+
 4.0.0
 -----
 
