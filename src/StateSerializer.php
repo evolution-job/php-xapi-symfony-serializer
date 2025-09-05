@@ -12,6 +12,7 @@
 namespace Xabbuh\XApi\Serializer\Symfony;
 
 use Exception;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Xabbuh\XApi\Model\State;
 use Xabbuh\XApi\Serializer\Exception\StateDeserializationException;
@@ -21,9 +22,9 @@ use Xabbuh\XApi\Serializer\StateSerializerInterface;
 /**
  * Serializes and deserializes {@link State states} using the Symfony Serializer component.
  */
-final class StateSerializer implements StateSerializerInterface
+final readonly class StateSerializer implements StateSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer)
+    public function __construct(private SerializerInterface $serializer)
     {
     }
 
@@ -31,50 +32,29 @@ final class StateSerializer implements StateSerializerInterface
     {
         try {
             return $this->serializer->serialize($state, 'json');
-        } catch (Exception $exception) {
+        } catch (Exception|ExceptionInterface $exception) {
             throw new StateSerializationException($exception->getMessage(), 0, $exception);
         }
     }
 
-    public function serializeStates(array $states): string
+    public function deserializeState(mixed $state, ?string $data = null): State
     {
         try {
-            return $this->serializer->serialize($states, 'json');
-        } catch (Exception $exception) {
-            throw new StateSerializationException($exception->getMessage(), 0, $exception);
-        }
-    }
-
-    public function deserializeState($state, $data = null): State
-    {
-        try {
-
-            $json = json_decode((string)$data, true);
-            $state['data'] = $json ?: $data;
-
-            $stateEncode = json_encode($state, JSON_THROW_ON_ERROR);
-
-            return $this->serializer->deserialize(
-                $stateEncode,
-                State::class,
-                'json'
-            );
-
-        } catch (Exception $exception) {
-            throw new StateDeserializationException($exception->getMessage(), 0, $exception);
-        }
-    }
-
-    public function deserializeStates($state, $data = null): array
-    {
-        try {
-            return $this->serializer->deserialize(
+            $stateObject = $this->serializer->deserialize(
                 $state,
-                'Xabbuh\XApi\Model\State[]',
-                'json'
+                State::class,
+                'json',
+                ['data' => $data]
             );
-        } catch (Exception $exception) {
+
+            if ($stateObject instanceof State) {
+                return $stateObject;
+            }
+
+        } catch (Exception|ExceptionInterface $exception) {
             throw new StateDeserializationException($exception->getMessage(), 0, $exception);
         }
+
+        throw new StateDeserializationException('Try to unserialized an empty State.', 0);
     }
 }

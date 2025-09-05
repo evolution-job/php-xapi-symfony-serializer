@@ -13,9 +13,9 @@ namespace Xabbuh\XApi\Serializer\Symfony\Tests;
 
 use Xabbuh\XApi\Serializer\Symfony\ActivitySerializer;
 use Xabbuh\XApi\Serializer\Symfony\Serializer;
-use Xabbuh\XApi\Serializer\Tests\ActivitySerializerTest as BaseActivitySerializerTest;
+use Xabbuh\XApi\Serializer\Tests\ActivitySerializerTestCase;
 
-class ActivitySerializerTest extends BaseActivitySerializerTest
+class ActivitySerializerTest extends ActivitySerializerTestCase
 {
     protected function createActivitySerializer(): ActivitySerializer
     {

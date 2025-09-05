@@ -11,9 +11,9 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
+use DateMalformedStringException;
 use DateTime;
 use DateTimeInterface;
-use Exception;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -27,17 +27,20 @@ final class TimestampNormalizer implements DenormalizerInterface, NormalizerInte
 {
     /**
      * {@inheritdoc}
-     * @throws Exception
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): ?DateTime
     {
-        return new DateTime($data);
+        try {
+            return new DateTime($data);
+        } catch (DateMalformedStringException) {
+            return null;
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return 'DateTime' === $type;
     }
@@ -54,19 +57,19 @@ final class TimestampNormalizer implements DenormalizerInterface, NormalizerInte
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): string
+    public function normalize(mixed $data, ?string $format = null, array $context = []): string
     {
-        if (!$object instanceof DateTimeInterface) {
-            throw new InvalidArgumentException(sprintf('Expected \DateTime object or object implementing \DateTimeInterface (got "%s").', get_debug_type($object)));
+        if (!$data instanceof DateTimeInterface) {
+            throw new InvalidArgumentException(sprintf('Expected \DateTime object or object implementing \DateTimeInterface (got "%s").', get_debug_type($data)));
         }
 
-        return $object->format('c');
+        return $data->format('c');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof DateTimeInterface;
     }

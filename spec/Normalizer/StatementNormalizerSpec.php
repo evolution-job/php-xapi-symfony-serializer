@@ -6,6 +6,7 @@ use PhpSpec\ObjectBehavior;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\DataFixtures\StatementFixtures;
+use Xabbuh\XApi\Model\Statement;
 use XApi\Fixtures\Json\StatementJsonFixtures;
 
 class StatementNormalizerSpec extends ObjectBehavior

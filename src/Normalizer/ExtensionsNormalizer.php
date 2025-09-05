@@ -37,31 +37,31 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ArrayObject|array|null
     {
-        if (!$object instanceof Extensions) {
+        if (!$data instanceof Extensions) {
             return null;
         }
 
-        $extensions = $object->getExtensions();
+        $extensions = $data->getExtensions();
 
         if (count($extensions) === 0) {
             return new ArrayObject();
         }
 
-        $data = [];
+        $map = [];
 
         foreach ($extensions as $extension) {
-            $data[$extension->getValue()] = $extensions[$extension];
+            $map[$extension->getValue()] = $extensions[$extension];
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Extensions;
     }
@@ -69,7 +69,7 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): Extensions
     {
         $extensions = new SplObjectStorage();
 
@@ -83,7 +83,7 @@ final class ExtensionsNormalizer implements DenormalizerInterface, NormalizerInt
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return Extensions::class === $type;
     }

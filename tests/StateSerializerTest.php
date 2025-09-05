@@ -11,14 +11,14 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Tests;
 
-use Xabbuh\XApi\Serializer\Symfony\DocumentDataSerializer;
 use Xabbuh\XApi\Serializer\Symfony\Serializer;
-use Xabbuh\XApi\Serializer\Tests\DocumentDataSerializerTestCase;
+use Xabbuh\XApi\Serializer\Symfony\StateSerializer;
+use Xabbuh\XApi\Serializer\Tests\StateSerializerTestCase;
 
-class DocumentDataSerializerTest extends DocumentDataSerializerTestCase
+class StateSerializerTest extends StateSerializerTestCase
 {
-    protected function createDocumentDataSerializer(): DocumentDataSerializer
+    protected function createStateSerializer(): StateSerializer
     {
-        return new DocumentDataSerializer(Serializer::createSerializer());
+        return new StateSerializer(Serializer::createSerializer());
     }
 }

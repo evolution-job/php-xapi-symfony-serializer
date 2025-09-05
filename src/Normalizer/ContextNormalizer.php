@@ -26,63 +26,63 @@ use Xabbuh\XApi\Model\StatementReference;
  */
 final class ContextNormalizer extends Normalizer
 {
-    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ArrayObject|array|null
     {
-        if (!$object instanceof Context) {
+        if (!$data instanceof Context) {
             return null;
         }
 
-        $data = [];
+        $map = [];
 
-        if (null !== $registration = $object->getRegistration()) {
-            $data['registration'] = $registration;
+        if (null !== $registration = $data->getRegistration()) {
+            $map['registration'] = $registration;
         }
 
-        if (($instructor = $object->getInstructor()) instanceof Actor) {
-            $data['instructor'] = $this->normalizeAttribute($instructor, $format, $context);
+        if (($instructor = $data->getInstructor()) instanceof Actor) {
+            $map['instructor'] = $this->normalizeAttribute($instructor, $format, $context);
         }
 
-        if (($team = $object->getTeam()) instanceof Group) {
-            $data['team'] = $this->normalizeAttribute($team, $format, $context);
+        if (($team = $data->getTeam()) instanceof Group) {
+            $map['team'] = $this->normalizeAttribute($team, $format, $context);
         }
 
-        if (($contextActivities = $object->getContextActivities()) instanceof ContextActivities) {
-            $data['contextActivities'] = $this->normalizeAttribute($contextActivities, $format, $context);
+        if (($contextActivities = $data->getContextActivities()) instanceof ContextActivities) {
+            $map['contextActivities'] = $this->normalizeAttribute($contextActivities, $format, $context);
         }
 
-        if (null !== $revision = $object->getRevision()) {
-            $data['revision'] = $revision;
+        if (null !== $revision = $data->getRevision()) {
+            $map['revision'] = $revision;
         }
 
-        if (null !== $platform = $object->getPlatform()) {
-            $data['platform'] = $platform;
+        if (null !== $platform = $data->getPlatform()) {
+            $map['platform'] = $platform;
         }
 
-        if (null !== $language = $object->getLanguage()) {
-            $data['language'] = $language;
+        if (null !== $language = $data->getLanguage()) {
+            $map['language'] = $language;
         }
 
-        if (($statement = $object->getStatement()) instanceof StatementReference) {
-            $data['statement'] = $this->normalizeAttribute($statement, $format, $context);
+        if (($statement = $data->getStatement()) instanceof StatementReference) {
+            $map['statement'] = $this->normalizeAttribute($statement, $format, $context);
         }
 
-        if (($extensions = $object->getExtensions()) instanceof Extensions) {
-            $data['extensions'] = $this->normalizeAttribute($extensions, $format, $context);
+        if (($extensions = $data->getExtensions()) instanceof Extensions) {
+            $map['extensions'] = $this->normalizeAttribute($extensions, $format, $context);
         }
 
-        if ($data === []) {
+        if ($map === []) {
             return new ArrayObject();
         }
 
-        return $data;
+        return $map;
     }
 
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Context;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = []): Context
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): Context
     {
         $statementContext = new Context();
 
@@ -125,7 +125,7 @@ final class ContextNormalizer extends Normalizer
         return $statementContext;
     }
 
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return Context::class === $type;
     }

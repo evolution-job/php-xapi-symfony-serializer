@@ -24,9 +24,9 @@ use Xabbuh\XApi\Serializer\Exception\DocumentDataSerializationException;
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  * @see \Xabbuh\XApi\Serializer\Symfony\Tests\DocumentDataSerializerTest
  */
-final class DocumentDataSerializer implements DocumentDataSerializerInterface
+final readonly class DocumentDataSerializer implements DocumentDataSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
@@ -46,9 +46,16 @@ final class DocumentDataSerializer implements DocumentDataSerializerInterface
     public function deserializeDocumentData($data): DocumentData
     {
         try {
-            return $this->serializer->deserialize($data, DocumentData::class, 'json');
+            $documentData = $this->serializer->deserialize($data, DocumentData::class, 'json');
+
+            if ($documentData instanceof DocumentData) {
+                return $documentData;
+            }
+
         } catch (ExceptionInterface $exception) {
             throw new DocumentDataDeserializationException($exception->getMessage(), 0, $exception);
         }
+
+        throw new DocumentDataDeserializationException('Try to unserialized an empty DocumentData.', 0);
     }
 }

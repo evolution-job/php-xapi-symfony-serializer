@@ -34,16 +34,16 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof LanguageMap) {
+        if (!$data instanceof LanguageMap) {
             return null;
         }
 
         $map = [];
 
-        foreach ($object->languageTags() as $languageTag) {
-            $map[$languageTag] = $object[$languageTag];
+        foreach ($data->languageTags() as $languageTag) {
+            $map[$languageTag] = $data[$languageTag];
         }
 
         return $map;
@@ -52,7 +52,7 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof LanguageMap;
     }
@@ -60,7 +60,7 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): LanguageMap
     {
         return LanguageMap::create($data);
     }
@@ -68,7 +68,7 @@ final class LanguageMapNormalizer implements DenormalizerInterface, NormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return LanguageMap::class === $type;
     }

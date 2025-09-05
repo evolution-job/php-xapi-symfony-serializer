@@ -31,113 +31,113 @@ final class DefinitionNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ArrayObject|array|null
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ArrayObject|array|null
     {
-        if (!$object instanceof Definition) {
+        if (!$data instanceof Definition) {
             return null;
         }
 
-        $data = [];
+        $map = [];
 
-        if (($name = $object->getName()) instanceof LanguageMap) {
-            $data['name'] = $this->normalizeAttribute($name, $format, $context);
+        if (($name = $data->getName()) instanceof LanguageMap) {
+            $map['name'] = $this->normalizeAttribute($name, $format, $context);
         }
 
-        if (($description = $object->getDescription()) instanceof LanguageMap) {
-            $data['description'] = $this->normalizeAttribute($description, $format, $context);
+        if (($description = $data->getDescription()) instanceof LanguageMap) {
+            $map['description'] = $this->normalizeAttribute($description, $format, $context);
         }
 
-        if (($type = $object->getType()) instanceof IRI) {
-            $data['type'] = $type->getValue();
+        if (($type = $data->getType()) instanceof IRI) {
+            $map['type'] = $type->getValue();
         }
 
-        if (($moreInfo = $object->getMoreInfo()) instanceof IRL) {
-            $data['moreInfo'] = $moreInfo->getValue();
+        if (($moreInfo = $data->getMoreInfo()) instanceof IRL) {
+            $map['moreInfo'] = $moreInfo->getValue();
         }
 
-        if (($extensions = $object->getExtensions()) instanceof Extensions) {
-            $data['extensions'] = $this->normalizeAttribute($extensions, $format, $context);
+        if (($extensions = $data->getExtensions()) instanceof Extensions) {
+            $map['extensions'] = $this->normalizeAttribute($extensions, $format, $context);
         }
 
-        if ($object instanceof InteractionDefinition) {
-            if (null !== $object->getCorrectResponsesPattern()) {
-                $data['correctResponsesPattern'] = $object->getCorrectResponsesPattern();
+        if ($data instanceof InteractionDefinition) {
+            if (null !== $data->getCorrectResponsesPattern()) {
+                $map['correctResponsesPattern'] = $data->getCorrectResponsesPattern();
             }
 
             switch (true) {
-                case $object instanceof ChoiceInteractionDefinition:
-                    $data['interactionType'] = 'choice';
+                case $data instanceof ChoiceInteractionDefinition:
+                    $map['interactionType'] = 'choice';
 
-                    if (null !== $choices = $object->getChoices()) {
-                        $data['choices'] = $this->normalizeAttribute($choices, $format, $context);
+                    if (null !== $choices = $data->getChoices()) {
+                        $map['choices'] = $this->normalizeAttribute($choices, $format, $context);
                     }
 
                     break;
-                case $object instanceof FillInInteractionDefinition:
-                    $data['interactionType'] = 'fill-in';
+                case $data instanceof FillInInteractionDefinition:
+                    $map['interactionType'] = 'fill-in';
                     break;
-                case $object instanceof LikertInteractionDefinition:
-                    $data['interactionType'] = 'likert';
+                case $data instanceof LikertInteractionDefinition:
+                    $map['interactionType'] = 'likert';
 
-                    if (null !== $scale = $object->getScale()) {
-                        $data['scale'] = $this->normalizeAttribute($scale, $format, $context);
+                    if (null !== $scale = $data->getScale()) {
+                        $map['scale'] = $this->normalizeAttribute($scale, $format, $context);
                     }
 
                     break;
-                case $object instanceof LongFillInInteractionDefinition:
-                    $data['interactionType'] = 'long-fill-in';
+                case $data instanceof LongFillInInteractionDefinition:
+                    $map['interactionType'] = 'long-fill-in';
                     break;
-                case $object instanceof MatchingInteractionDefinition:
-                    $data['interactionType'] = 'matching';
+                case $data instanceof MatchingInteractionDefinition:
+                    $map['interactionType'] = 'matching';
 
-                    if (null !== $source = $object->getSource()) {
-                        $data['source'] = $this->normalizeAttribute($source, $format, $context);
+                    if (null !== $source = $data->getSource()) {
+                        $map['source'] = $this->normalizeAttribute($source, $format, $context);
                     }
 
-                    if (null !== $target = $object->getTarget()) {
-                        $data['target'] = $this->normalizeAttribute($target, $format, $context);
-                    }
-
-                    break;
-                case $object instanceof NumericInteractionDefinition:
-                    $data['interactionType'] = 'numeric';
-                    break;
-                case $object instanceof OtherInteractionDefinition:
-                    $data['interactionType'] = 'other';
-                    break;
-                case $object instanceof PerformanceInteractionDefinition:
-                    $data['interactionType'] = 'performance';
-
-                    if (null !== $steps = $object->getSteps()) {
-                        $data['steps'] = $this->normalizeAttribute($steps, $format, $context);
+                    if (null !== $target = $data->getTarget()) {
+                        $map['target'] = $this->normalizeAttribute($target, $format, $context);
                     }
 
                     break;
-                case $object instanceof SequencingInteractionDefinition:
-                    $data['interactionType'] = 'sequencing';
+                case $data instanceof NumericInteractionDefinition:
+                    $map['interactionType'] = 'numeric';
+                    break;
+                case $data instanceof OtherInteractionDefinition:
+                    $map['interactionType'] = 'other';
+                    break;
+                case $data instanceof PerformanceInteractionDefinition:
+                    $map['interactionType'] = 'performance';
 
-                    if (null !== $choices = $object->getChoices()) {
-                        $data['choices'] = $this->normalizeAttribute($choices, $format, $context);
+                    if (null !== $steps = $data->getSteps()) {
+                        $map['steps'] = $this->normalizeAttribute($steps, $format, $context);
                     }
 
                     break;
-                case $object instanceof TrueFalseInteractionDefinition:
-                    $data['interactionType'] = 'true-false';
+                case $data instanceof SequencingInteractionDefinition:
+                    $map['interactionType'] = 'sequencing';
+
+                    if (null !== $choices = $data->getChoices()) {
+                        $map['choices'] = $this->normalizeAttribute($choices, $format, $context);
+                    }
+
+                    break;
+                case $data instanceof TrueFalseInteractionDefinition:
+                    $map['interactionType'] = 'true-false';
                     break;
             }
         }
 
-        if (empty($data)) {
+        if (empty($map)) {
             return new ArrayObject();
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Definition;
     }
@@ -145,7 +145,7 @@ final class DefinitionNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): mixed
     {
         if (isset($data['interactionType'])) {
             switch ($data['interactionType']) {
@@ -248,7 +248,7 @@ final class DefinitionNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         $supportedDefinitionClasses = [Definition::class, ChoiceInteractionDefinition::class, FillInInteractionDefinition::class, LikertInteractionDefinition::class, LongFillInInteractionDefinition::class, MatchingInteractionDefinition::class, NumericInteractionDefinition::class, OtherInteractionDefinition::class, PerformanceInteractionDefinition::class, SequencingInteractionDefinition::class, TrueFalseInteractionDefinition::class];
 

@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\Agent;
 use Xabbuh\XApi\Model\State;
+use Xabbuh\XApi\Serializer\Exception\StateDeserializationException;
 
 /**
  * Normalizes and denormalizes xAPI statements.
@@ -24,38 +25,37 @@ use Xabbuh\XApi\Model\State;
  */
 final class StateNormalizer extends Normalizer
 {
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-
-        if (!$object instanceof State) {
+        if (!$data instanceof State) {
             return null;
         }
 
-        $array = [];
+        $map = [];
 
-        if (null !== $activity = $object->getActivity()->getId()->getValue()) {
-            $array['activityId'] = $this->normalizeAttribute($activity, $format, $context);
+        if (null !== $activity = $data->getActivity()->getId()->getValue()) {
+            $map['activityId'] = $this->normalizeAttribute($activity, $format, $context);
         }
 
-        $agent = $object->getAgent();
-        $array['agent'] = $this->normalizeAttribute($agent, $format, $context);
+        $agent = $data->getAgent();
+        $map['agent'] = $this->normalizeAttribute($agent, $format, $context);
 
-        if (null !== $stateId = $object->getStateId()) {
-            $array['stateId'] = $this->normalizeAttribute($stateId, $format, $context);
+        if (null !== $stateId = $data->getStateId()) {
+            $map['stateId'] = $this->normalizeAttribute($stateId, $format, $context);
         }
 
-        if (null !== $registrationId = $object->getRegistrationId()) {
-            $array['registrationId'] = $this->normalizeAttribute($registrationId, $format, $context);
+        if (null !== $registrationId = $data->getRegistrationId()) {
+            $map['registration'] = $this->normalizeAttribute($registrationId, $format, $context);
         }
 
-        if (null !== $data = $object->getData()) {
-            $array['data'] = $this->normalizeAttribute($data, $format, $context);
+        if (null !== $data = $data->getData()) {
+            $map['data'] = $this->normalizeAttribute($data, $format, $context);
         }
 
-        return $array;
+        return $map;
     }
 
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof State;
     }
@@ -64,27 +64,16 @@ final class StateNormalizer extends Normalizer
      * @throws JsonException
      * @throws ExceptionInterface
      */
-    public function denormalize($data, $type, $format = null, array $context = []): array|State
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): State
     {
-        // set of States
-        if (isset($data[0])) {
-            $stateIds = [];
-            foreach ($data as $d) {
-                $stateIds[] = $this->denormarlizeState($d, $format);
-            }
-
-            return $stateIds;
-        }
-
-        // Once
-        return $this->denormarlizeState($data, $format);
+        return $this->denormarlizeState($data, $format, $context);
     }
 
     /**
-     * @param ?string $format
-     * @throws JsonException|ExceptionInterface
+     * @throws ExceptionInterface
+     * @throws JsonException
      */
-    public function denormarlizeState(?array $state, string $format = null): State
+    public function denormarlizeState(?array $state, ?string $format = null, array $context = []): State
     {
         $activity = null;
         if (isset($state['activityId'])) {
@@ -93,23 +82,27 @@ final class StateNormalizer extends Normalizer
 
         $agent = null;
         if (isset($state['agent'])) {
-            $agent = $this->denormalizeData(json_decode((string)$state['agent'], true), Agent::class, $format);
+            $agent = $this->denormalizeData($state['agent'], Agent::class, $format);
         }
 
         $stateId = $state['stateId'] ?? null;
 
+        if (!isset($activity, $agent, $stateId)) {
+            throw new StateDeserializationException();
+        }
+
         $registrationId = $state['registration'] ?? null;
 
-        if (!is_array($state['data']) && !is_null($decoded = json_decode((string)$state['data'], true))) {
+        $data = $state['data'] ?? null;
+
+        if (isset($context['data']) && !is_null($decoded = json_decode($context['data'], true, 512, JSON_THROW_ON_ERROR))) {
             $data = $decoded;
-        } else {
-            $data = $state['data'];
         }
 
         return new State($activity, $agent, $stateId, $registrationId, $data);
     }
 
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return State::class === $type;
     }

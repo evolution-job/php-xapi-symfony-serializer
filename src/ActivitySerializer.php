@@ -11,6 +11,7 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony;
 
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Serializer\ActivitySerializerInterface;
@@ -23,12 +24,13 @@ use Xabbuh\XApi\Serializer\Exception\SerializationException;
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
  * @see \Xabbuh\XApi\Serializer\Symfony\Tests\ActivitySerializerTest
  */
-final class ActivitySerializer implements ActivitySerializerInterface
+final  readonly class ActivitySerializer implements ActivitySerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     /**
      * {@inheritdoc}
+     * @throws ExceptionInterface
      */
     public function serializeActivity(Activity $activity): string
     {

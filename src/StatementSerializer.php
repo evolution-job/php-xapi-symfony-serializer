@@ -24,9 +24,9 @@ use Xabbuh\XApi\Serializer\StatementSerializerInterface;
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  * @see \Xabbuh\XApi\Serializer\Symfony\Tests\StatementSerializerTest
  */
-final class StatementSerializer implements StatementSerializerInterface
+final readonly class StatementSerializer implements StatementSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
@@ -55,18 +55,24 @@ final class StatementSerializer implements StatementSerializerInterface
     /**
      * {@inheritDoc}
      */
-    public function deserializeStatement($data, array $attachments = []): Statement
+    public function deserializeStatement(string $data, array $attachments = []): Statement
     {
         try {
-            return $this->serializer->deserialize(
+            $statement = $this->serializer->deserialize(
                 $data,
                 Statement::class,
                 'json',
                 ['xapi_attachments' => $attachments]
             );
+
+            if ($statement instanceof Statement) {
+                return $statement;
+            }
         } catch (ExceptionInterface $exception) {
             throw new StatementDeserializationException($exception->getMessage(), 0, $exception);
         }
+
+        throw new StatementDeserializationException('Try to unserialized an empty Statement.', 0);
     }
 
     /**

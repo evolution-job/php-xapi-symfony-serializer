@@ -24,9 +24,9 @@ use Xabbuh\XApi\Serializer\Exception\ActorSerializationException;
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  * @see \Xabbuh\XApi\Serializer\Symfony\Tests\ActorSerializerTest
  */
-final class ActorSerializer implements ActorSerializerInterface
+final readonly class ActorSerializer implements ActorSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
@@ -46,9 +46,15 @@ final class ActorSerializer implements ActorSerializerInterface
     public function deserializeActor($data): Actor
     {
         try {
-            return $this->serializer->deserialize($data, Actor::class, 'json');
+            $actor = $this->serializer->deserialize($data, Actor::class, 'json');
+
+            if ($actor instanceof Actor) {
+                return $actor;
+            }
         } catch (ExceptionInterface $exception) {
             throw new ActorDeserializationException($exception->getMessage(), 0, $exception);
         }
+
+        throw new ActorDeserializationException('Try to unserialized an empty Actor.', 0);
     }
 }

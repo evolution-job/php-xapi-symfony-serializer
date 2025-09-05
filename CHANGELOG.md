@@ -1,36 +1,51 @@
 CHANGELOG
 =========
 
+6.0.0
+-----
+
+* dropped support for Symfony < 7.3
+* dropped support for PHP < 8.4
+* allow `5.x` releases of the `php-xapi/serializer` package.
+* dropped support for `4.x` releases of the `php-xapi/serializer` package.
+
+5.0.0
+-----
+
+* dropped support for Symfony < 6.4
+* allow `4.x` releases of the `php-xapi/serializer`.
+* dropped support for `3.x` releases of the `php-xapi/serializer` package.
+
 4.0.0
 -----
 
 * dropped support for Symfony < 5.4
 * dropped support for PHP < 8.1
-* All dependencies from php-xapi/* are now loaded from forks at `https://github.com/evolution-job/`
+* all dependencies from php-xapi/* are now loaded from forks at `https://github.com/evolution-job/`
 
 3.0.0
 -----
 
-* Add `ActivitySerializer` that implements `ActivitySerializerInterface`.
-* Add `StateSerializer` that implements `StateSerializerInterface`.
-* Add `StateDocumentSerializer` that implements `StateDocumentSerializerInterface`.
-* Drop support for `2.x` releases of the `php-xapi/serializer` package.
-* Throws exceptions defined in `3.0` release of the `php-xapi/serializer` package.
+* add `ActivitySerializer` that implements `ActivitySerializerInterface`.
+* add `StateSerializer` that implements `StateSerializerInterface`.
+* add `StateDocumentSerializer` that implements `StateDocumentSerializerInterface`.
+* dropped support for `2.x` releases of the `php-xapi/serializer` package.
+* throws exceptions defined in `3.0` release of the `php-xapi/serializer` package.
 
 2.2.0
 -----
 
 * added support for Symfony 5
-* dropped support for unmaintained Symfony versions
+* dropped support for unmaintained Symfony versions.
 * dropped support for PHP < 7.1
 
 2.1.0
 -----
 
-* added missing support for statement versions
+* added missing support for statement versions.
 * dropped support for PHP < 5.6
-* allow `2.x` releases of the `php-xapi/model` package too
-* allow `3.x` releases of the `php-xapi/model` package too
+* allow `2.x` releases of the `php-xapi/model` package too.
+* allow `3.x` releases of the `php-xapi/model` package too.
 
 2.0.0
 -----

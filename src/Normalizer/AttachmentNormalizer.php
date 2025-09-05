@@ -26,34 +26,40 @@ final class AttachmentNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof Attachment) {
+        if (!$data instanceof Attachment) {
             return null;
         }
 
-        $data = ['usageType' => $object->getUsageType()->getValue(), 'contentType' => $object->getContentType(), 'length' => $object->getLength(), 'sha2' => $object->getSha2(), 'display' => $this->normalizeAttribute($object->getDisplay(), $format, $context)];
+        $map = [
+            'usageType'   => $data->getUsageType()->getValue(),
+            'contentType' => $data->getContentType(),
+            'length'      => $data->getLength(),
+            'sha2'        => $data->getSha2(),
+            'display'     => $this->normalizeAttribute($data->getDisplay(), $format, $context)
+        ];
 
-        if (($description = $object->getDescription()) instanceof LanguageMap) {
-            $data['description'] = $this->normalizeAttribute($description, $format, $context);
+        if (($description = $data->getDescription()) instanceof LanguageMap) {
+            $map['description'] = $this->normalizeAttribute($description, $format, $context);
         }
 
-        if (($fileUrl = $object->getFileUrl()) instanceof IRL) {
-            $data['fileUrl'] = $fileUrl->getValue();
+        if (($fileUrl = $data->getFileUrl()) instanceof IRL) {
+            $map['fileUrl'] = $fileUrl->getValue();
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Attachment;
     }
 
-    public function denormalize($data, $type, $format = null, array $context = []): Attachment
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): Attachment
     {
         $display = $this->denormalizeData($data['display'], LanguageMap::class, $format, $context);
         $description = null;
@@ -75,7 +81,7 @@ final class AttachmentNormalizer extends Normalizer
         return new Attachment(IRI::fromString($data['usageType']), $data['contentType'], $data['length'], $data['sha2'], $display, $description, $fileUrl, $content);
     }
 
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return Attachment::class === $type;
     }

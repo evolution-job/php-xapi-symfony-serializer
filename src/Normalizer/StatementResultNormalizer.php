@@ -24,29 +24,29 @@ final class StatementResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof StatementResult) {
+        if (!$data instanceof StatementResult) {
             return null;
         }
 
-        $data = ['statements' => []];
+        $map = ['statements' => []];
 
-        foreach ($object->getStatements() as $statement) {
-            $data['statements'][] = $this->normalizeAttribute($statement, $format, $context);
+        foreach ($data->getStatements() as $statement) {
+            $map['statements'][] = $this->normalizeAttribute($statement, $format, $context);
         }
 
-        if (($moreUrlPath = $object->getMoreUrlPath()) instanceof IRL) {
-            $data['more'] = $moreUrlPath->getValue();
+        if (($moreUrlPath = $data->getMoreUrlPath()) instanceof IRL) {
+            $map['more'] = $moreUrlPath->getValue();
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof StatementResult;
     }
@@ -54,7 +54,7 @@ final class StatementResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): StatementResult
     {
         $statements = $this->denormalizeData($data['statements'], 'Xabbuh\XApi\Model\Statement[]', $format, $context);
         $moreUrlPath = null;
@@ -69,7 +69,7 @@ final class StatementResultNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return StatementResult::class === $type;
     }

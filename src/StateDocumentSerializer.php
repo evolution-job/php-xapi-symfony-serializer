@@ -22,9 +22,9 @@ use Xabbuh\XApi\Serializer\StateDocumentSerializerInterface;
 /**
  * Serializes and deserializes {@link use StateDocument stateDocument} using the Symfony Serializer component.
  */
-final class StateDocumentSerializer implements StateDocumentSerializerInterface
+final readonly class StateDocumentSerializer implements StateDocumentSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     public function serializeStateDocument(StateDocument $stateDocument): string
     {
@@ -39,18 +39,24 @@ final class StateDocumentSerializer implements StateDocumentSerializerInterface
     {
         try {
 
-            $json = json_decode((string)$data, true);
+            $json = json_decode((string)$data, true, 512, JSON_THROW_ON_ERROR);
             $state['data'] = $json ?: $data;
             $state = json_encode($state, JSON_THROW_ON_ERROR);
 
-            return $this->serializer->deserialize(
+            $stateDocument = $this->serializer->deserialize(
                 $state,
                 StateDocument::class,
                 'json'
             );
 
-        } catch (JsonException $jsonException) {
+            if ($stateDocument instanceof StateDocument) {
+                return $stateDocument;
+            }
+
+        } catch (JsonException|ExceptionInterface $jsonException) {
             throw new StateDocumentDeserializationException($jsonException->getMessage(), 0, $jsonException);
         }
+
+        throw new StateDocumentDeserializationException('Try to unserialized an empty StateDocument.', 0);
     }
 }

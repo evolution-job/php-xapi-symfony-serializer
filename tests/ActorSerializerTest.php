@@ -13,9 +13,9 @@ namespace Xabbuh\XApi\Serializer\Symfony\Tests;
 
 use Xabbuh\XApi\Serializer\Symfony\ActorSerializer;
 use Xabbuh\XApi\Serializer\Symfony\Serializer;
-use Xabbuh\XApi\Serializer\Tests\ActorSerializerTest as BaseActorSerializerTest;
+use Xabbuh\XApi\Serializer\Tests\ActorSerializerTestCase;
 
-class ActorSerializerTest extends BaseActorSerializerTest
+class ActorSerializerTest extends ActorSerializerTestCase
 {
     protected function createActorSerializer(): ActorSerializer
     {

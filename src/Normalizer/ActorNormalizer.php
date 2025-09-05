@@ -30,43 +30,43 @@ final class ActorNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof Actor) {
+        if (!$data instanceof Actor) {
             return null;
         }
 
-        $data = [];
+        $map = [];
 
-        $this->normalizeInverseFunctionalIdentifier($data, $object->getInverseFunctionalIdentifier(), $format, $context);
+        $this->normalizeInverseFunctionalIdentifier($map, $data->getInverseFunctionalIdentifier(), $format, $context);
 
-        if (null !== $name = $object->getName()) {
-            $data['name'] = $name;
+        if (null !== $name = $data->getName()) {
+            $map['name'] = $name;
         }
 
-        if ($object instanceof Group) {
+        if ($data instanceof Group) {
             $members = [];
 
-            foreach ($object->getMembers() as $agent) {
+            foreach ($data->getMembers() as $agent) {
                 $members[] = $this->normalize($agent);
             }
 
             if ($members !== []) {
-                $data['member'] = $members;
+                $map['member'] = $members;
             }
 
-            $data['objectType'] = 'Group';
+            $map['objectType'] = 'Group';
         } else {
-            $data['objectType'] = 'Agent';
+            $map['objectType'] = 'Agent';
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Actor;
     }
@@ -74,7 +74,7 @@ final class ActorNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): Group|Agent
     {
         $inverseFunctionalIdentifier = $this->denormalizeInverseFunctionalIdentifier($data, $format, $context);
         $name = $data['name'] ?? null;
@@ -93,12 +93,15 @@ final class ActorNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return Actor::class === $type || Agent::class === $type || Group::class === $type;
     }
 
-    private function normalizeInverseFunctionalIdentifier(array &$data, InverseFunctionalIdentifier $inverseFunctionalIdentifier = null, ?string $format = null, array $context = []): void
+    /**
+     * @throws ExceptionInterface
+     */
+    private function normalizeInverseFunctionalIdentifier(array &$data, ?InverseFunctionalIdentifier $inverseFunctionalIdentifier = null, ?string $format = null, array $context = []): void
     {
         if (!$inverseFunctionalIdentifier instanceof InverseFunctionalIdentifier) {
             return;
@@ -121,7 +124,10 @@ final class ActorNormalizer extends Normalizer
         }
     }
 
-    private function denormalizeInverseFunctionalIdentifier(array $data, ?string $format = null, array $context = []): ?InverseFunctionalIdentifier
+    /**
+     * @throws ExceptionInterface
+     */
+    private function denormalizeInverseFunctionalIdentifier(mixed $data, ?string $format = null, array $context = []): ?InverseFunctionalIdentifier
     {
         if (isset($data['mbox'])) {
             return InverseFunctionalIdentifier::withMbox(IRI::fromString($data['mbox']));
@@ -142,6 +148,9 @@ final class ActorNormalizer extends Normalizer
         return null;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     private function denormalizeAccount(array $data, ?string $format = null, array $context = [])
     {
         if (!isset($data['account'])) {
@@ -154,7 +163,7 @@ final class ActorNormalizer extends Normalizer
     /**
      * @throws ExceptionInterface
      */
-    private function denormalizeGroup($name, array $data, InverseFunctionalIdentifier $inverseFunctionalIdentifier = null, $format = null, array $context = []): Group
+    private function denormalizeGroup($name, array $data, ?InverseFunctionalIdentifier $inverseFunctionalIdentifier = null, ?string $format = null, array $context = []): Group
     {
         $members = [];
 

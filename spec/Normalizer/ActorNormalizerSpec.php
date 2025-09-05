@@ -7,6 +7,7 @@ use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Xabbuh\XApi\DataFixtures\ActorFixtures;
+use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Agent;
 use XApi\Fixtures\Json\ActorJsonFixtures;
 

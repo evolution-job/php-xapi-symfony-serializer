@@ -24,19 +24,19 @@ final class AccountNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof Account) {
+        if (!$data instanceof Account) {
             return null;
         }
 
-        return ['name' => $object->getName(), 'homePage' => $object->getHomePage()->getValue()];
+        return ['name' => $data->getName(), 'homePage' => $data->getHomePage()->getValue()];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Account;
     }
@@ -44,7 +44,7 @@ final class AccountNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): Account
     {
         $name = '';
         $homePage = '';
@@ -63,7 +63,7 @@ final class AccountNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return Account::class === $type;
     }
