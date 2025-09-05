@@ -16,25 +16,25 @@ final class VerbNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof Verb) {
+        if (!$data instanceof Verb) {
             return null;
         }
 
-        $data = ['id' => $object->getId()->getValue()];
+        $map = ['id' => $data->getId()->getValue()];
 
-        if (($display = $object->getDisplay()) instanceof LanguageMap) {
-            $data['display'] = $this->normalizeAttribute($display, $format, $context);
+        if (($display = $data->getDisplay()) instanceof LanguageMap) {
+            $map['display'] = $this->normalizeAttribute($display, $format, $context);
         }
 
-        return $data;
+        return $map;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Verb;
     }
@@ -42,7 +42,7 @@ final class VerbNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): Verb
     {
         $iri = IRI::fromString($data['id']);
         $display = null;
@@ -57,7 +57,7 @@ final class VerbNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return Verb::class === $type;
     }

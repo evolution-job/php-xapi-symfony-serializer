@@ -22,9 +22,9 @@ use Symfony\Component\Serializer\SerializerInterface;
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-class FilterNullValueNormalizer implements NormalizerInterface, SerializerAwareInterface
+readonly class FilterNullValueNormalizer implements NormalizerInterface, SerializerAwareInterface
 {
-    private readonly PropertyNormalizer $propertyNormalizer;
+    private NormalizerInterface $propertyNormalizer;
 
     public function __construct()
     {
@@ -43,9 +43,9 @@ class FilterNullValueNormalizer implements NormalizerInterface, SerializerAwareI
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ArrayObject
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ArrayObject
     {
-        $data = $this->propertyNormalizer->normalize($object, $format, $context);
+        $data = $this->propertyNormalizer->normalize($data, $format, $context);
         $arrayObject = new ArrayObject();
 
         foreach ($data as $key => $value) {
@@ -60,7 +60,7 @@ class FilterNullValueNormalizer implements NormalizerInterface, SerializerAwareI
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $this->propertyNormalizer->supportsNormalization($data, $format);
     }

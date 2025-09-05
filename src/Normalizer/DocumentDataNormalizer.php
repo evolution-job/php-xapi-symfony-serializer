@@ -34,19 +34,19 @@ final class DocumentDataNormalizer implements DenormalizerInterface, NormalizerI
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof DocumentData) {
+        if (!$data instanceof DocumentData) {
             return null;
         }
 
-        return $object->getData();
+        return $data->getData();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof DocumentData;
     }
@@ -54,7 +54,7 @@ final class DocumentDataNormalizer implements DenormalizerInterface, NormalizerI
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): DocumentData
     {
         return new DocumentData($data);
     }
@@ -62,7 +62,7 @@ final class DocumentDataNormalizer implements DenormalizerInterface, NormalizerI
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return DocumentData::class === $type;
     }

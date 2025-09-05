@@ -34,34 +34,40 @@ final class ObjectNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if ($object instanceof Activity) {
-            $activityData = ['objectType' => 'Activity', 'id' => $object->getId()->getValue()];
+        if ($data instanceof Activity) {
+            $activityData = ['objectType' => 'Activity', 'id' => $data->getId()->getValue()];
 
-            if (($definition = $object->getDefinition()) instanceof Definition) {
+            if (($definition = $data->getDefinition()) instanceof Definition) {
                 $activityData['definition'] = $this->normalizeAttribute($definition, $format, $context);
             }
 
             return $activityData;
         }
 
-        if ($object instanceof StatementReference) {
-            return ['objectType' => 'StatementRef', 'id' => $object->getStatementId()->getValue()];
+        if ($data instanceof StatementReference) {
+            return ['objectType' => 'StatementRef', 'id' => $data->getStatementId()->getValue()];
         }
 
-        if ($object instanceof SubStatement) {
-            $data = ['objectType' => 'SubStatement', 'actor' => $this->normalizeAttribute($object->getActor(), $format, $context), 'verb' => $this->normalizeAttribute($object->getVerb(), $format, $context), 'object' => $this->normalizeAttribute($object->getObject(), $format, $context)];
+        if ($data instanceof SubStatement) {
 
-            if (($result = $object->getResult()) instanceof Result) {
-                $data['result'] = $this->normalizeAttribute($result, $format, $context);
+            $map = [
+                'objectType' => 'SubStatement',
+                'actor'      => $this->normalizeAttribute($data->getActor(), $format, $context),
+                'verb'       => $this->normalizeAttribute($data->getVerb(), $format, $context),
+                'object'     => $this->normalizeAttribute($data->getObject(), $format, $context)
+            ];
+
+            if (($result = $data->getResult()) instanceof Result) {
+                $map['result'] = $this->normalizeAttribute($result, $format, $context);
             }
 
-            if (($statementContext = $object->getContext()) instanceof Context) {
-                $data['context'] = $this->normalizeAttribute($statementContext, $format, $context);
+            if (($statementContext = $data->getContext()) instanceof Context) {
+                $map['context'] = $this->normalizeAttribute($statementContext, $format, $context);
             }
 
-            return $data;
+            return $map;
         }
 
         return null;
@@ -70,7 +76,7 @@ final class ObjectNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof StatementObject;
     }
@@ -78,7 +84,7 @@ final class ObjectNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): mixed
     {
         if (!isset($data['objectType']) || 'Activity' === $data['objectType']) {
             return $this->denormalizeActivity($data, $format, $context);
@@ -102,7 +108,7 @@ final class ObjectNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return in_array($type, [Activity::class, StatementObject::class, StatementReference::class, SubStatement::class], true);
     }

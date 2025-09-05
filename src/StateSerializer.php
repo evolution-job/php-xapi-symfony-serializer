@@ -12,6 +12,7 @@
 namespace Xabbuh\XApi\Serializer\Symfony;
 
 use Exception;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Xabbuh\XApi\Model\State;
 use Xabbuh\XApi\Serializer\Exception\StateDeserializationException;
@@ -21,9 +22,9 @@ use Xabbuh\XApi\Serializer\StateSerializerInterface;
 /**
  * Serializes and deserializes {@link State states} using the Symfony Serializer component.
  */
-final class StateSerializer implements StateSerializerInterface
+final readonly class StateSerializer implements StateSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer)
+    public function __construct(private SerializerInterface $serializer)
     {
     }
 
@@ -31,7 +32,7 @@ final class StateSerializer implements StateSerializerInterface
     {
         try {
             return $this->serializer->serialize($state, 'json');
-        } catch (Exception $exception) {
+        } catch (Exception|ExceptionInterface $exception) {
             throw new StateSerializationException($exception->getMessage(), 0, $exception);
         }
     }
@@ -40,7 +41,7 @@ final class StateSerializer implements StateSerializerInterface
     {
         try {
             return $this->serializer->serialize($states, 'json');
-        } catch (Exception $exception) {
+        } catch (Exception|ExceptionInterface $exception) {
             throw new StateSerializationException($exception->getMessage(), 0, $exception);
         }
     }
@@ -49,7 +50,7 @@ final class StateSerializer implements StateSerializerInterface
     {
         try {
 
-            $json = json_decode((string)$data, true);
+            $json = json_decode((string)$data, true, 512, JSON_THROW_ON_ERROR);
             $state['data'] = $json ?: $data;
 
             $stateEncode = json_encode($state, JSON_THROW_ON_ERROR);
@@ -60,7 +61,7 @@ final class StateSerializer implements StateSerializerInterface
                 'json'
             );
 
-        } catch (Exception $exception) {
+        } catch (Exception|ExceptionInterface $exception) {
             throw new StateDeserializationException($exception->getMessage(), 0, $exception);
         }
     }
@@ -73,7 +74,7 @@ final class StateSerializer implements StateSerializerInterface
                 'Xabbuh\XApi\Model\State[]',
                 'json'
             );
-        } catch (Exception $exception) {
+        } catch (Exception|ExceptionInterface $exception) {
             throw new StateDeserializationException($exception->getMessage(), 0, $exception);
         }
     }

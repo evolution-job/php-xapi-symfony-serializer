@@ -24,9 +24,9 @@ use Xabbuh\XApi\Serializer\Exception\ActorSerializationException;
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  * @see \Xabbuh\XApi\Serializer\Symfony\Tests\ActorSerializerTest
  */
-final class ActorSerializer implements ActorSerializerInterface
+final readonly class ActorSerializer implements ActorSerializerInterface
 {
-    public function __construct(private readonly SerializerInterface $serializer) { }
+    public function __construct(private SerializerInterface $serializer) { }
 
     /**
      * {@inheritDoc}
