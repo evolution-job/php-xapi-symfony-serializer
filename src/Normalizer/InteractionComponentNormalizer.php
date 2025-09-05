@@ -24,15 +24,15 @@ final class InteractionComponentNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function normalize($object, $format = null, array $context = []): ?array
+    public function normalize(mixed $data, ?string $format = null, array $context = []): ?array
     {
-        if (!$object instanceof InteractionComponent) {
+        if (!$data instanceof InteractionComponent) {
             return null;
         }
 
-        $data = ['id' => $object->getId()];
+        $data = ['id' => $data->getId()];
 
-        if (($description = $object->getDescription()) instanceof LanguageMap) {
+        if (($description = $data->getDescription()) instanceof LanguageMap) {
             $data['description'] = $this->normalizeAttribute($description, $format, $context);
         }
 
@@ -42,7 +42,7 @@ final class InteractionComponentNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof InteractionComponent;
     }
@@ -50,7 +50,7 @@ final class InteractionComponentNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $type, $format = null, array $context = [])
+    public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): InteractionComponent
     {
         $description = null;
 
@@ -64,7 +64,7 @@ final class InteractionComponentNormalizer extends Normalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return InteractionComponent::class === $type;
     }
