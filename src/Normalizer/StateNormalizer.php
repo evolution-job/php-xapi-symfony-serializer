@@ -95,7 +95,7 @@ final class StateNormalizer extends Normalizer
 
         $data = $state['data'] ?? null;
 
-        if (isset($context['data']) && !is_null($decoded = json_decode($context['data'], true, 512, JSON_THROW_ON_ERROR))) {
+        if (!is_null($context['data']) && !is_null($decoded = json_decode($context['data'], true, 512))) {
             $data = $decoded;
         }
 
