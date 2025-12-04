@@ -11,7 +11,6 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony;
 
-use JsonException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Xabbuh\XApi\Model\StateDocument;
@@ -20,7 +19,9 @@ use Xabbuh\XApi\Serializer\Exception\StateDocumentSerializationException;
 use Xabbuh\XApi\Serializer\StateDocumentSerializerInterface;
 
 /**
- * Serializes and deserializes {@link use StateDocument stateDocument} using the Symfony Serializer component.
+ * Serializes and deserializes {@link use StateDocument} using the Symfony Serializer component.
+ *
+ * @author Mathieu Boldo <mathieu.boldo@entrili.com>
  */
 final readonly class StateDocumentSerializer implements StateDocumentSerializerInterface
 {
@@ -35,16 +36,12 @@ final readonly class StateDocumentSerializer implements StateDocumentSerializerI
         }
     }
 
-    public function deserializeStateDocument($data): StateDocument
+    public function deserializeStateDocument(string $data): StateDocument
     {
         try {
 
-            $json = json_decode((string)$data, true, 512, JSON_THROW_ON_ERROR);
-            $state['data'] = $json ?: $data;
-            $state = json_encode($state, JSON_THROW_ON_ERROR);
-
             $stateDocument = $this->serializer->deserialize(
-                $state,
+                $data,
                 StateDocument::class,
                 'json'
             );
@@ -53,8 +50,8 @@ final readonly class StateDocumentSerializer implements StateDocumentSerializerI
                 return $stateDocument;
             }
 
-        } catch (JsonException|ExceptionInterface $jsonException) {
-            throw new StateDocumentDeserializationException($jsonException->getMessage(), 0, $jsonException);
+        } catch (ExceptionInterface $exception) {
+            throw new StateDocumentDeserializationException($exception->getMessage(), 0, $exception);
         }
 
         throw new StateDocumentDeserializationException('Try to unserialized an empty StateDocument.', 0);
