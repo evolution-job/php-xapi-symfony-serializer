@@ -40,7 +40,6 @@ use Xabbuh\XApi\Serializer\Symfony\Normalizer\VerbNormalizer;
  * for the Experience API.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
- * @see \Xabbuh\XApi\Serializer\Symfony\Tests\SerializerTest
  */
 class Serializer
 {
@@ -51,7 +50,30 @@ class Serializer
      */
     public static function createSerializer(): SymfonySerializer|SerializerInterface
     {
-        $normalizers = [new AccountNormalizer(), new ActorNormalizer(), new AttachmentNormalizer(), new ContextNormalizer(), new ContextActivitiesNormalizer(), new DefinitionNormalizer(), new DocumentDataNormalizer(), new ExtensionsNormalizer(), new InteractionComponentNormalizer(), new LanguageMapNormalizer(), new ObjectNormalizer(), new ResultNormalizer(), new StateNormalizer(), new StatementNormalizer(), new StatementResultNormalizer(), new TimestampNormalizer(), new VerbNormalizer(), new ArrayDenormalizer(), new FilterNullValueNormalizer(), new PropertyNormalizer()];
+        $normalizers = [
+            // xAPI normalizers
+            new AccountNormalizer(),
+            new ActorNormalizer(),
+            new AttachmentNormalizer(),
+            new ContextNormalizer(),
+            new ContextActivitiesNormalizer(),
+            new DefinitionNormalizer(),
+            new DocumentDataNormalizer(),
+            new ExtensionsNormalizer(),
+            new InteractionComponentNormalizer(),
+            new LanguageMapNormalizer(),
+            new ObjectNormalizer(),
+            new ResultNormalizer(),
+            new StateNormalizer(),
+            new StatementNormalizer(),
+            new StatementResultNormalizer(),
+            new TimestampNormalizer(),
+            new VerbNormalizer(),
+            // Symfony normalizers
+            new ArrayDenormalizer(),
+            new FilterNullValueNormalizer(),
+            new PropertyNormalizer()
+        ];
         $encoders = [new JsonEncoder(),];
 
         return new SymfonySerializer($normalizers, $encoders);

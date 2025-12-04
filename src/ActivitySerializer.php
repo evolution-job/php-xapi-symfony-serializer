@@ -22,7 +22,6 @@ use Xabbuh\XApi\Serializer\Exception\SerializationException;
  * Serializes {@link Activity activities} using the Symfony Serializer component.
  *
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
- * @see \Xabbuh\XApi\Serializer\Symfony\Tests\ActivitySerializerTest
  */
 final  readonly class ActivitySerializer implements ActivitySerializerInterface
 {

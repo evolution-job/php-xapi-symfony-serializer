@@ -22,7 +22,6 @@ use Xabbuh\XApi\Serializer\StatementResultSerializerInterface;
  * Serializes and deserializes {@link StatementResult statement results} using the Symfony Serializer component.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
- * @see \Xabbuh\XApi\Serializer\Symfony\Tests\StatementResultSerializerTest
  */
 final readonly class StatementResultSerializer implements StatementResultSerializerInterface
 {

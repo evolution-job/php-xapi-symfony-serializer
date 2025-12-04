@@ -22,7 +22,6 @@ use Xabbuh\XApi\Serializer\Exception\ActorSerializationException;
  * Serializes and deserializes {@link Actor actors} using the Symfony Serializer component.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
- * @see \Xabbuh\XApi\Serializer\Symfony\Tests\ActorSerializerTest
  */
 final readonly class ActorSerializer implements ActorSerializerInterface
 {

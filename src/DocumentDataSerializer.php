@@ -22,7 +22,6 @@ use Xabbuh\XApi\Serializer\Exception\DocumentDataSerializationException;
  * Serializes and deserializes {@link Document documents} using the Symfony Serializer component.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
- * @see \Xabbuh\XApi\Serializer\Symfony\Tests\DocumentDataSerializerTest
  */
 final readonly class DocumentDataSerializer implements DocumentDataSerializerInterface
 {
