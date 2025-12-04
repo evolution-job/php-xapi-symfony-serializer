@@ -11,7 +11,6 @@
 
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
-use JsonException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\Agent;
@@ -33,12 +32,12 @@ final class StateNormalizer extends Normalizer
 
         $map = [];
 
-        if (null !== $activity = $data->getActivity()->getId()->getValue()) {
-            $map['activityId'] = $this->normalizeAttribute($activity, $format, $context);
-        }
-
         $agent = $data->getAgent();
         $map['agent'] = $this->normalizeAttribute($agent, $format, $context);
+
+        if (null !== $activity = $data->getActivity()?->getId()->getValue()) {
+            $map['activityId'] = $this->normalizeAttribute($activity, $format, $context);
+        }
 
         if (null !== $stateId = $data->getStateId()) {
             $map['stateId'] = $this->normalizeAttribute($stateId, $format, $context);
@@ -61,7 +60,6 @@ final class StateNormalizer extends Normalizer
     }
 
     /**
-     * @throws JsonException
      * @throws ExceptionInterface
      */
     public function denormalize(mixed $data, $type, ?string $format = null, array $context = []): State
@@ -71,7 +69,6 @@ final class StateNormalizer extends Normalizer
 
     /**
      * @throws ExceptionInterface
-     * @throws JsonException
      */
     public function denormarlizeState(?array $state, ?string $format = null, array $context = []): State
     {
@@ -88,15 +85,20 @@ final class StateNormalizer extends Normalizer
         $stateId = $state['stateId'] ?? null;
 
         if (!isset($activity, $agent, $stateId)) {
-            throw new StateDeserializationException();
+            throw new StateDeserializationException('Missing required state attributes: activityId, agent, stateId.');
         }
 
         $registrationId = $state['registration'] ?? null;
 
         $data = $state['data'] ?? null;
 
-        if (!is_null($context['data']) && !is_null($decoded = json_decode($context['data'], true, 512))) {
-            $data = $decoded;
+        if (!is_null($context['data'] ?? null)) {
+
+            $data = $context['data'];
+
+            if ($decoded = json_decode($context['data'], true)) {
+                $data = $decoded;
+            }
         }
 
         return new State($activity, $agent, $stateId, $registrationId, $data);
