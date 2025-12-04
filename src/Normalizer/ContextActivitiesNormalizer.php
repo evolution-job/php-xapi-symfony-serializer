@@ -12,7 +12,9 @@
 namespace Xabbuh\XApi\Serializer\Symfony\Normalizer;
 
 use ArrayObject;
+use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\ContextActivities;
+use Xabbuh\XApi\Model\IRI;
 
 /**
  * Normalizes and denormalizes xAPI statement context activities.
@@ -75,18 +77,22 @@ final class ContextActivitiesNormalizer extends Normalizer
 
         if (isset($data['parent'])) {
             $parentActivities = $this->denormalizeData($data['parent'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
+            $parentActivities = $this->avoidEmptyActivities($parentActivities);
         }
 
         if (isset($data['grouping'])) {
             $groupingActivities = $this->denormalizeData($data['grouping'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
+            $groupingActivities = $this->avoidEmptyActivities($groupingActivities);
         }
 
         if (isset($data['category'])) {
             $categoryActivities = $this->denormalizeData($data['category'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
+            $categoryActivities = $this->avoidEmptyActivities($categoryActivities);
         }
 
         if (isset($data['other'])) {
             $otherActivities = $this->denormalizeData($data['other'], 'Xabbuh\XApi\Model\Activity[]', $format, $context);
+            $otherActivities = $this->avoidEmptyActivities($otherActivities);
         }
 
         return new ContextActivities($parentActivities, $groupingActivities, $categoryActivities, $otherActivities);
@@ -98,5 +104,25 @@ final class ContextActivitiesNormalizer extends Normalizer
     public function supportsDenormalization(mixed $data, $type, ?string $format = null, array $context = []): bool
     {
         return ContextActivities::class === $type;
+    }
+
+    private function avoidEmptyActivities(?array $activities): ?array
+    {
+        if (!$activities) {
+            return $activities;
+        }
+
+        $emptyActivity = new Activity(IRI::fromString('http://'));
+
+        /**
+         * @var Activity $activity
+         */
+        foreach ($activities as $key => $activity) {
+            if ($activity->equals($emptyActivity)) {
+                unset($activities[$key]);
+            }
+        }
+
+        return $activities;
     }
 }
