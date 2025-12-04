@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+6.0.1
+-----
+
+* add `StateNormalizer`.
+* add `StateDocumentSerializer` that implements `StateDocumentSerializerInterface`.
+* add specs for `ContextNormalizer`, `ContextActivitiesNormalizer` and `StateNormalizer`.
+* add tests for `PersonSerializer` and `StateDocumentSerializer`.
+
 6.0.0
 -----
 
