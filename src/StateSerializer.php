@@ -21,6 +21,8 @@ use Xabbuh\XApi\Serializer\StateSerializerInterface;
 
 /**
  * Serializes and deserializes {@link State states} using the Symfony Serializer component.
+ *
+ * @author Mathieu Boldo <mathieu.boldo@entrili.com>
  */
 final readonly class StateSerializer implements StateSerializerInterface
 {
