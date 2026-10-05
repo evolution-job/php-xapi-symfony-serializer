@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+7.0.0
+-----
+
+* allow deserializing States without a `stateId` for list and bulk-delete requests
+
 6.0.1
 -----
 
