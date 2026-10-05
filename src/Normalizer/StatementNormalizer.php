@@ -93,7 +93,7 @@ final class StatementNormalizer extends Normalizer
         if (isset($data['version'])) {
             $version = $data['version'];
 
-            if (preg_match('/^1\.0(?:\.\d+)?$/', (string)$version) === 0 || preg_match('/^1\.0(?:\.\d+)?$/', (string)$version) === 0 || preg_match('/^1\.0(?:\.\d+)?$/', (string)$version) === false) {
+            if (in_array(preg_match('/^1\.0(?:\.\d+)?$/', (string)$version), [0, 0, false], true)) {
                 throw new UnsupportedStatementVersionException(sprintf('Statements at version "%s" are not supported.', $version));
             }
         }

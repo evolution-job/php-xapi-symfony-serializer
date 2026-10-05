@@ -35,7 +35,7 @@ final class StateNormalizer extends Normalizer
         $agent = $data->getAgent();
         $map['agent'] = $this->normalizeAttribute($agent, $format, $context);
 
-        if (null !== $activity = $data->getActivity()?->getId()->getValue()) {
+        if (null !== $activity = $data->getActivity()->getId()->getValue()) {
             $map['activityId'] = $this->normalizeAttribute($activity, $format, $context);
         }
 
