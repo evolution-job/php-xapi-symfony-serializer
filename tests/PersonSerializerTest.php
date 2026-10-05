@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the xAPI package.
  *
@@ -8,7 +10,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Xabbuh\XApi\Serializer\Symfony\Tests;
 
 use Xabbuh\XApi\Serializer\PersonSerializerInterface;
@@ -16,7 +17,7 @@ use Xabbuh\XApi\Serializer\Symfony\PersonSerializer;
 use Xabbuh\XApi\Serializer\Symfony\Serializer;
 use Xabbuh\XApi\Serializer\Tests\PersonSerializerTestCase;
 
-class PersonSerializerTest extends PersonSerializerTestCase
+final class PersonSerializerTest extends PersonSerializerTestCase
 {
     protected function createPersonSerializer(): PersonSerializerInterface
     {

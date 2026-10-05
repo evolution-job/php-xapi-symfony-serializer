@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the xAPI package.
  *
@@ -8,9 +10,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Xabbuh\XApi\Serializer\Symfony\Tests;
 
+use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -32,7 +34,7 @@ use Xabbuh\XApi\Model\Verb;
 use Xabbuh\XApi\Serializer\Symfony\Serializer;
 use XApi\Fixtures\Json\AttachmentJsonFixtures;
 
-class SerializerTest extends TestCase
+final class SerializerTest extends TestCase
 {
     private SerializerInterface $serializer;
 
@@ -124,7 +126,7 @@ class SerializerTest extends TestCase
 
     /**
      * @return array[]
-     * @throws \JsonException
+     * @throws JsonException
      */
     public static function serializeAttachmentData(): array
     {

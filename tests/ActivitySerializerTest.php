@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the xAPI package.
  *
@@ -8,14 +10,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Xabbuh\XApi\Serializer\Symfony\Tests;
 
 use Xabbuh\XApi\Serializer\Symfony\ActivitySerializer;
 use Xabbuh\XApi\Serializer\Symfony\Serializer;
 use Xabbuh\XApi\Serializer\Tests\ActivitySerializerTestCase;
 
-class ActivitySerializerTest extends ActivitySerializerTestCase
+final class ActivitySerializerTest extends ActivitySerializerTestCase
 {
     protected function createActivitySerializer(): ActivitySerializer
     {
