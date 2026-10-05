@@ -84,8 +84,8 @@ final class StateNormalizer extends Normalizer
 
         $stateId = $state['stateId'] ?? null;
 
-        if (!isset($activity, $agent, $stateId)) {
-            throw new StateDeserializationException('Missing required state attributes: activityId, agent, stateId.');
+        if (!isset($activity, $agent)) {
+            throw new StateDeserializationException('Missing required state attributes: activityId, agent.');
         }
 
         $registrationId = $state['registration'] ?? null;

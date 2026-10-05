@@ -41,6 +41,22 @@ class StateNormalizerSpec extends ObjectBehavior
         $denormalized->equals($original)->shouldReturn(true);
     }
 
+    public function it_denormalizes_state_without_a_state_id(): void
+    {
+        $this->setSerializer(new Serializer([
+            new ActorNormalizer(),
+            new ObjectNormalizer()
+        ]));
+
+        $stateData = json_decode(StateJsonFixtures::getMinimalState(), true, 512, JSON_THROW_ON_ERROR);
+        unset($stateData['stateId']);
+
+        $state = $this->denormalize($stateData, State::class);
+
+        $state->shouldBeAnInstanceOf(State::class);
+        $state->getStateId()->shouldReturn(null);
+    }
+
     public function it_supports_normalizing_state(): void
     {
         $this->supportsNormalization(StateFixtures::getMinimalState())->shouldBe(true);
